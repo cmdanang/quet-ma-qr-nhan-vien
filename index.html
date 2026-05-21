@@ -195,12 +195,15 @@
                     <p class="text-zinc-400 text-xs mt-1">Thêm mới, sửa đổi và kiểm soát danh sách nhạc nhúng hiển thị trên trang chủ của bạn.</p>
                 </div>
                 <!-- Nút thao tác nhanh -->
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <button onclick="openAddTrackModal()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300 shadow-lg shadow-brand-500/10">
                         <i class="fa-solid fa-plus"></i> Nhúng Bài Hát Mới
                     </button>
                     <button onclick="resetToSampleData()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300">
                         <i class="fa-solid fa-rotate-left"></i> Khôi Phục Mẫu
+                    </button>
+                    <button onclick="logoutAdmin()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300">
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
                     </button>
                 </div>
             </div>
@@ -467,6 +470,50 @@
         </div>
     </div>
 
+    <!-- ============================================== -->
+    <!-- LOGIN MODAL (Màn hình khóa trang quản lý) -->
+    <!-- ============================================== -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-brand-dark/95 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-8 space-y-6 shadow-2xl border border-brand-500/20">
+            <div class="text-center space-y-2">
+                <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-pink-500 flex items-center justify-center text-white text-2xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-black text-white">Xác Thực Quản Trị</h3>
+                <p class="text-zinc-400 text-xs">Vui lòng đăng nhập để truy cập công cụ quản lý nhúng nhạc</p>
+            </div>
+            
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Tài khoản</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-500">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </span>
+                        <input type="text" id="login-username" required placeholder="Nhập tài khoản" class="w-full pl-11 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white placeholder-zinc-700">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Mật khẩu</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-500">
+                            <i class="fa-solid fa-key text-sm"></i>
+                        </span>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-11 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white placeholder-zinc-700">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-gradient-to-r from-brand-500 to-pink-500 hover:from-brand-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold text-xs transition duration-300 shadow-lg shadow-brand-500/10">
+                        Đăng Nhập
+                    </button>
+                    <button type="button" onclick="closeLoginModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 py-3 px-4 rounded-xl font-bold text-xs transition duration-300">
+                        Hủy bỏ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <!-- Footer tổng trang web -->
     <footer class="bg-zinc-950 border-t border-zinc-900 py-6 text-center text-xs text-zinc-500 space-y-2 mt-auto">
@@ -577,6 +624,13 @@
                 // Cập nhật lại list bên user
                 renderUserSongs();
             } else {
+                // Kiểm tra xem đã đăng nhập thành công trong phiên làm việc hiện tại hay chưa
+                const isLoggedIn = sessionStorage.getItem('muzikvibe_admin_logged') === 'true';
+                if (!isLoggedIn) {
+                    openLoginModal();
+                    return;
+                }
+
                 viewAdmin.classList.remove('hidden');
                 viewAdmin.classList.add('block');
                 viewUser.classList.add('hidden');
@@ -1100,6 +1154,43 @@
             setTimeout(() => {
                 toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 bg-brand-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl border border-brand-500/20 flex items-center gap-3 transition-all duration-300 pointer-events-none";
             }, 3500);
+        }
+
+        // Mở màn hình đăng nhập
+        function openLoginModal() {
+            document.getElementById('login-modal').classList.remove('hidden');
+            document.getElementById('login-username').value = "";
+            document.getElementById('login-password').value = "";
+            document.getElementById('login-username').focus();
+        }
+
+        // Đóng màn hình đăng nhập
+        function closeLoginModal() {
+            document.getElementById('login-modal').classList.add('hidden');
+        }
+
+        // Xử lý sự kiện đăng nhập xác thực tài khoản
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value;
+
+            // Xác thực tài khoản chỉ định
+            if (user === 'admin' && pass === '11011993') {
+                sessionStorage.setItem('muzikvibe_admin_logged', 'true');
+                closeLoginModal();
+                showToast("Đăng nhập thành công!", "success");
+                switchView('admin'); // Chuyển thẳng tới trang admin
+            } else {
+                showToast("Sai tài khoản hoặc mật khẩu!", "error");
+            }
+        }
+
+        // Đăng xuất khỏi hệ thống
+        function logoutAdmin() {
+            sessionStorage.removeItem('muzikvibe_admin_logged');
+            showToast("Đã đăng xuất tài khoản quản trị!");
+            switchView('user'); // Trở về trang người dùng
         }
     </script>
 </body>
