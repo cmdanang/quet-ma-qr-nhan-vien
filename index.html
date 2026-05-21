@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tan Music Streaming</title>
+  <title>Tan Music Firebase</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
   <style>
     body {
@@ -76,7 +76,6 @@
   <!-- Main -->
   <main class="flex-1 p-5 pb-40">
 
-    <!-- Search -->
     <div class="mb-8">
       <input
         id="searchInput"
@@ -94,7 +93,7 @@
       </h2>
 
       <p class="text-lg opacity-90">
-        Website nghe nhạc online hiện đại giống ZingMP3
+        Website nghe nhạc online Firebase Firestore
       </p>
     </div>
 
@@ -112,12 +111,13 @@
   </main>
 </div>
 
-<!-- Music Player -->
+<!-- Player -->
 <div class="fixed bottom-0 left-0 right-0 glass p-4 border-t border-white/10">
 
   <div class="flex flex-col md:flex-row items-center justify-between gap-5">
 
     <div class="flex items-center gap-4">
+
       <img id="playerCover"
         src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600"
         class="w-16 h-16 rounded-xl object-cover"
@@ -227,6 +227,7 @@
       class="bg-red-500 px-5 py-2 rounded-xl">
       Logout
     </button>
+
   </div>
 
   <!-- Add Song -->
@@ -264,6 +265,7 @@
       class="mt-5 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold">
       Thêm bài hát
     </button>
+
   </div>
 
   <!-- Song Management -->
@@ -278,37 +280,47 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+
+// ===============================
+// FIREBASE IMPORT
+// ===============================
+
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc
+}
+from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js'
+
+// ===============================
+// FIREBASE CONFIG
+// ===============================
+
+const firebaseConfig = {
+   apiKey : "AIzaSyAvGpYndTlRJB11lciUUzkeivnpwiCPi9c" , 
+  authDomain : "tan-music.firebaseapp.com" , 
+  projectId : "tan-music" , 
+  storageBucket : "tan-music.firebasestorage.app" , 
+  messagingSenderId : "500820885842" , 
+  appId : "1:500820885842:web:d0d90626190075ea7eba8b" , 
+  measurementId : "G-FL02S5W4TY" 
+}
+
+const app = initializeApp(firebaseConfig)
+const db = getFirestore(app)
 
 // ===============================
 // DATABASE
 // ===============================
 
-let songs = JSON.parse(localStorage.getItem('tan_music_database')) || [
-  {
-    title: 'Dream Music',
-    artist: 'Tanhenry',
-    cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600',
-    audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-  },
-  {
-    title: 'Night Chill',
-    artist: 'LoFi Studio',
-    cover: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600',
-    audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
-  }
-]
-
-function saveSongs() {
-  localStorage.setItem(
-    'tan_music_database',
-    JSON.stringify(songs)
-  )
-}
-
-// ===============================
-// ELEMENTS
-// ===============================
+let songs = []
 
 const songList = document.getElementById('songList')
 const adminSongs = document.getElementById('adminSongs')
@@ -316,6 +328,31 @@ const audio = document.getElementById('audio')
 
 let currentSong = 0
 let isPlaying = false
+
+// ===============================
+// LOAD SONGS
+// ===============================
+
+async function loadSongs() {
+
+  songs = []
+
+  const querySnapshot = await getDocs(
+    collection(db, 'songs')
+  )
+
+  querySnapshot.forEach((docItem) => {
+
+    songs.push({
+      id: docItem.id,
+      ...docItem.data()
+    })
+  })
+
+  renderSongs()
+}
+
+loadSongs()
 
 // ===============================
 // RENDER SONGS
@@ -328,8 +365,8 @@ function renderSongs(data = songs) {
 
   data.forEach((song, index) => {
 
-    // FRONT SONG CARD
     songList.innerHTML += `
+
       <div class="song-card glass rounded-3xl overflow-hidden">
 
         <img src="${song.cover}"
@@ -345,7 +382,7 @@ function renderSongs(data = songs) {
             ${song.artist}
           </p>
 
-          <button onclick="playSong(${index})"
+          <button onclick="window.playSong(${index})"
             class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded-xl">
             ▶ Phát nhạc
           </button>
@@ -354,8 +391,8 @@ function renderSongs(data = songs) {
       </div>
     `
 
-    // ADMIN SONGS
     adminSongs.innerHTML += `
+
       <div class="glass p-5 rounded-2xl flex justify-between items-center flex-wrap gap-4">
 
         <div class="flex items-center gap-4">
@@ -372,30 +409,28 @@ function renderSongs(data = songs) {
 
         <div class="flex gap-3">
 
-          <button onclick="editSong(${index})"
+          <button onclick="window.editSong(${index})"
             class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-xl">
             Sửa
           </button>
 
-          <button onclick="deleteSong(${index})"
+          <button onclick="window.deleteSong(${index})"
             class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl">
             Xóa
           </button>
 
         </div>
+
       </div>
     `
-
   })
 }
 
-renderSongs()
-
 // ===============================
-// MUSIC PLAYER
+// PLAYER
 // ===============================
 
-function playSong(index) {
+window.playSong = function(index) {
 
   currentSong = index
 
@@ -414,7 +449,7 @@ function playSong(index) {
     'fa-solid fa-circle-pause text-4xl'
 }
 
-function togglePlay() {
+window.togglePlay = function() {
 
   if (!audio.src) return
 
@@ -434,7 +469,7 @@ function togglePlay() {
   }
 }
 
-function nextSong() {
+window.nextSong = function() {
 
   currentSong++
 
@@ -445,7 +480,7 @@ function nextSong() {
   playSong(currentSong)
 }
 
-function prevSong() {
+window.prevSong = function() {
 
   currentSong--
 
@@ -456,17 +491,7 @@ function prevSong() {
   playSong(currentSong)
 }
 
-audio.addEventListener('timeupdate', () => {
-
-  if (!audio.duration) return
-
-  const progress = document.getElementById('progress')
-
-  progress.style.width =
-    (audio.currentTime / audio.duration) * 100 + '%'
-})
-
-function seek(event) {
+window.seek = function(event) {
 
   const width = event.currentTarget.clientWidth
   const clickX = event.offsetX
@@ -475,9 +500,17 @@ function seek(event) {
     (clickX / width) * audio.duration
 }
 
-function changeVolume(value) {
+window.changeVolume = function(value) {
   audio.volume = value
 }
+
+audio.addEventListener('timeupdate', () => {
+
+  if (!audio.duration) return
+
+  document.getElementById('progress').style.width =
+    (audio.currentTime / audio.duration) * 100 + '%'
+})
 
 audio.addEventListener('ended', () => {
   nextSong()
@@ -487,20 +520,23 @@ audio.addEventListener('ended', () => {
 // ADMIN LOGIN
 // ===============================
 
-function openAdmin() {
+window.openAdmin = function() {
   document.getElementById('adminModal').classList.remove('hidden')
   document.getElementById('adminModal').classList.add('flex')
 }
 
-function closeAdmin() {
+window.closeAdmin = function() {
   document.getElementById('adminModal').classList.add('hidden')
   document.getElementById('adminModal').classList.remove('flex')
 }
 
-function loginAdmin() {
+window.loginAdmin = function() {
 
-  const username = document.getElementById('adminUser').value.trim()
-  const password = document.getElementById('adminPass').value.trim()
+  const username =
+    document.getElementById('adminUser').value.trim()
+
+  const password =
+    document.getElementById('adminPass').value.trim()
 
   if (username === 'admin' && password === '110193') {
 
@@ -517,23 +553,22 @@ function loginAdmin() {
   }
 }
 
-function logoutAdmin() {
+window.logoutAdmin = function() {
 
   localStorage.removeItem('tan_music_admin')
 
   document.getElementById('adminPanel').classList.add('hidden')
 }
 
-// Auto login admin
 if (localStorage.getItem('tan_music_admin') === 'true') {
   document.getElementById('adminPanel').classList.remove('hidden')
 }
 
 // ===============================
-// CRUD SONGS
+// ADD SONG
 // ===============================
 
-function addSong() {
+window.addSong = async function() {
 
   const title = document.getElementById('title').value
   const artist = document.getElementById('artist').value
@@ -545,39 +580,48 @@ function addSong() {
     return
   }
 
-  songs.push({
+  await addDoc(collection(db, 'songs'), {
     title,
     artist,
     cover,
-    audio: audioUrl
+    audio: audioUrl,
+    createdAt: new Date().toISOString()
   })
-
-  saveSongs()
-  renderSongs()
 
   document.getElementById('title').value = ''
   document.getElementById('artist').value = ''
   document.getElementById('cover').value = ''
   document.getElementById('audioUrl').value = ''
 
+  await loadSongs()
+
   alert('Đã thêm bài hát 🎵')
 }
 
-function deleteSong(index) {
+// ===============================
+// DELETE SONG
+// ===============================
+
+window.deleteSong = async function(index) {
 
   const confirmDelete = confirm('Xóa bài hát này?')
 
   if (!confirmDelete) return
 
-  songs.splice(index, 1)
+  await deleteDoc(
+    doc(db, 'songs', songs[index].id)
+  )
 
-  saveSongs()
-  renderSongs()
+  await loadSongs()
 
   alert('Đã xóa bài hát')
 }
 
-function editSong(index) {
+// ===============================
+// EDIT SONG
+// ===============================
+
+window.editSong = async function(index) {
 
   const song = songs[index]
 
@@ -593,15 +637,17 @@ function editSong(index) {
   const newAudio = prompt('Link MP3:', song.audio)
   if (newAudio === null) return
 
-  songs[index] = {
-    title: newTitle,
-    artist: newArtist,
-    cover: newCover,
-    audio: newAudio
-  }
+  await updateDoc(
+    doc(db, 'songs', song.id),
+    {
+      title: newTitle,
+      artist: newArtist,
+      cover: newCover,
+      audio: newAudio
+    }
+  )
 
-  saveSongs()
-  renderSongs()
+  await loadSongs()
 
   alert('Cập nhật bài hát thành công ✨')
 }
@@ -610,7 +656,7 @@ function editSong(index) {
 // SEARCH SONG
 // ===============================
 
-function searchSongs() {
+window.searchSongs = function() {
 
   const keyword = document
     .getElementById('searchInput')
