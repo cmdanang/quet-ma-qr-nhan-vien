@@ -1,0 +1,14 @@
+[
+  {
+    "title": "Dream Music",
+    "artist": "Tanhenry",
+    "cover": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+  },
+  {
+    "title": "Night Chill",
+    "artist": "LoFi Studio",
+    "cover": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600",
+    "audio": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+  }
+]
