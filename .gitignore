@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Thư mục uploads (chứa file MP3)
+uploads/
+
+# Database SQLite
+database.sqlite
+*.sqlite
+*.sqlite3
+
+# File tạm thời / hệ thống
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+
+# Cấu hình môi trường (nếu có)
+.env
+.env.local
+.env.production
+
+# IDE (tuỳ chọn)
+.vscode/
+.idea/
+*.swp
+*.swo

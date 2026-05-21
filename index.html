@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>MusicFlow - Nghe nhạc trực tuyến</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-music"></i>
+                <span>MusicFlow</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="/" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Khám phá</span>
+                </a>
+                <a href="/admin" class="nav-item">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Quản lý</span>
+                </a>
+            </nav>
+            <div class="playlist-info">
+                <i class="fas fa-headphones"></i>
+                <p>Thư viện nhạc<br><span>Trải nghiệm âm nhạc đỉnh cao</span></p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <h1>Khám phá âm nhạc</h1>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm bài hát...">
+                </div>
+            </header>
+
+            <div class="songs-grid" id="songsGrid">
+                <!-- Songs will be loaded here -->
+                <div class="loading">Đang tải danh sách nhạc...</div>
+            </div>
+        </main>
+
+        <!-- Music Player -->
+        <div class="music-player" id="musicPlayer">
+            <div class="player-container">
+                <div class="song-info">
+                    <div class="song-avatar">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <div class="song-details">
+                        <h4 id="currentTitle">Chưa chọn bài hát</h4>
+                        <p id="currentArtist">---</p>
+                    </div>
+                </div>
+
+                <div class="player-controls">
+                    <button class="control-btn" id="prevBtn">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button class="control-btn play-pause" id="playPauseBtn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="control-btn" id="nextBtn">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+
+                <div class="progress-area">
+                    <span class="current-time" id="currentTime">0:00</span>
+                    <div class="progress-bar" id="progressBar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                    <span class="total-time" id="totalTime">0:00</span>
+                </div>
+
+                <div class="volume-control">
+                    <i class="fas fa-volume-up"></i>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.7">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio" src=""></audio>
+    <script src="script.js"></script>
+</body>
+</html>
