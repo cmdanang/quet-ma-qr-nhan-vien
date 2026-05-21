@@ -1,1197 +1,501 @@
 <!DOCTYPE html>
-<html lang="vi" class="dark">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MuzikVibe - Nền Tảng Nghe Nhạc Online Trẻ Trung & Sống Động</title>
-    <!-- Google Fonts - Inter & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            dark: '#09090b',
-                            panel: '#121214',
-                            card: '#18181b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Tùy chỉnh thanh cuộn siêu mảnh phong cách hiện đại */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(9, 9, 11, 0.5);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(139, 92, 246, 0.3);
-            border-radius: 999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(139, 92, 246, 0.6);
-        }
-        /* Hiệu ứng mờ ảo Glassmorphism */
-        .glass-panel {
-            background: rgba(18, 18, 20, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .glow-hover:hover {
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-            transform: translateY(-2px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tan Music - Modern Music Streaming</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    body {
+      background: #170f23;
+      color: white;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .song-card:hover {
+      transform: translateY(-5px);
+      transition: 0.3s;
+    }
+
+    .progress {
+      width: 0%;
+    }
+
+    audio {
+      display: none;
+    }
+
+    .admin-panel {
+      display: none;
+    }
+  </style>
 </head>
-<body class="bg-brand-dark text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body>
 
-    <!-- Header chính (Điều hướng toàn trang) -->
-    <header class="glass-panel sticky top-0 z-40 w-full px-4 lg:px-8 py-4 flex items-center justify-between border-b border-zinc-800">
-        <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-tr from-brand-500 to-pink-500 p-2.5 rounded-2xl shadow-lg shadow-brand-500/20">
-                <i class="fa-solid fa-compact-disc fa-spin fa-spin-focus text-white text-xl"></i>
-            </div>
-            <div>
-                <h1 class="text-xl lg:text-2xl font-extrabold tracking-tight bg-gradient-to-r from-white via-brand-100 to-brand-500 bg-clip-text text-transparent">MuzikVibe</h1>
-                <p class="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">Thế giới âm thanh số</p>
-            </div>
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 glass p-5 hidden md:block">
+      <h1 class="text-3xl font-bold text-purple-400 mb-10">
+        🎵 Tan Music
+      </h1>
+
+      <div class="space-y-3">
+        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+          <i class="fa-solid fa-house mr-2"></i> Trang chủ
         </div>
 
-        <!-- Thanh tìm kiếm & Tabs chuyển đổi -->
-        <div class="flex items-center gap-4">
-            <!-- Nút Chuyển Giao Diện Nhìn Trực Quan -->
-            <div class="bg-zinc-900/90 p-1.5 rounded-xl border border-zinc-800 flex items-center gap-1">
-                <button id="btn-user-mode" onclick="switchView('user')" class="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all duration-300 bg-brand-500 text-white">
-                    <i class="fa-solid fa-headphones"></i> <span class="hidden md:inline">Trang Nghe Nhạc</span>
-                </button>
-                <button id="btn-admin-mode" onclick="switchView('admin')" class="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all duration-300 text-zinc-400 hover:text-white">
-                    <i class="fa-solid fa-sliders"></i> <span class="hidden md:inline">Quản Lý Nhúng</span>
-                </button>
-            </div>
+        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+          <i class="fa-solid fa-chart-line mr-2"></i> Trending
         </div>
-    </header>
 
-    <!-- Thân trang web chính -->
-    <main class="flex-1 w-full max-w-7xl mx-auto px-4 lg:px-8 py-6 flex flex-col gap-6">
-        
-        <!-- ============================================== -->
-        <!-- VIEW 1: TRANG CHỦ NGHE NHẠC (USER VIEW) -->
-        <!-- ============================================== -->
-        <section id="view-user" class="space-y-8 block">
-            
-            <!-- Banner Nổi Bật (Featured Hero Banner) -->
-            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-purple-900/60 via-indigo-950/70 to-zinc-950 border border-purple-500/10 p-6 md:p-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(139,92,246,0.15),transparent_45%)]"></div>
-                <div class="relative z-10 max-w-xl space-y-4 text-center md:text-left">
-                    <span class="bg-brand-500/20 text-brand-500 text-xs font-bold px-3 py-1.5 rounded-full border border-brand-500/30">
-                        🔥 TRANG THỊNH HÀNH 2026
-                    </span>
-                    <h2 class="text-3xl md:text-5xl font-black leading-tight tracking-tight">
-                        Tận Hưởng <span class="bg-gradient-to-r from-brand-500 to-pink-500 bg-clip-text text-transparent">Giai Điệu</span> Không Giới Hạn
-                    </h2>
-                    <p class="text-zinc-400 text-sm md:text-base leading-relaxed">
-                        Khám phá danh sách nhạc và video cực chất được nhúng trực tiếp từ các nền tảng âm nhạc hàng đầu toàn cầu. Hoàn toàn miễn phí, mượt mà và hiện đại.
-                    </p>
-                    <div class="flex flex-wrap gap-3 justify-center md:justify-start pt-2">
-                        <button onclick="playFeaturedSong()" class="bg-white text-brand-dark hover:bg-zinc-200 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition duration-300 shadow-lg">
-                            <i class="fa-solid fa-play text-xs"></i> Nghe Ngay Bản Hot
-                        </button>
-                        <a href="#music-grid" class="bg-zinc-900/80 text-zinc-300 hover:text-white hover:bg-zinc-800/90 border border-zinc-800 px-5 py-3 rounded-xl font-semibold text-sm transition duration-300">
-                            Khám Phá List Nhạc
-                        </a>
-                    </div>
-                </div>
-                <!-- 3D-Like Music Graphic Box -->
-                <div class="relative w-48 h-48 md:w-56 md:h-56 shrink-0 group">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-500 to-pink-500 rounded-3xl rotate-6 opacity-30 group-hover:rotate-12 transition duration-500 blur-md"></div>
-                    <img id="featured-banner-img" src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=500&q=80" alt="Featured Cover" class="relative z-10 w-full h-full object-cover rounded-3xl border border-zinc-700 shadow-2xl transition duration-500 group-hover:scale-[1.03]">
-                    <div class="absolute bottom-3 left-3 z-20 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10 text-[11px] font-semibold text-brand-500 flex items-center gap-1.5">
-                        <span class="flex h-2 w-2 relative">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
-                        </span>
-                        ĐANG PHÁT HOT
-                    </div>
-                </div>
-            </div>
+        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+          <i class="fa-solid fa-music mr-2"></i> Playlist
+        </div>
 
-            <!-- Bộ lọc thể loại & Tìm kiếm -->
-            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-zinc-900/40 p-4 rounded-2xl border border-zinc-800/80">
-                <!-- Nhóm Tìm kiếm -->
-                <div class="relative flex-1 max-w-md">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-400">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
-                    <input type="text" id="user-search-input" onkeyup="filterSongs()" placeholder="Tìm kiếm bài hát, ca sĩ, thể loại..." class="w-full pl-11 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition duration-300 placeholder-zinc-500">
-                </div>
+        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+          <i class="fa-solid fa-heart mr-2"></i> Yêu thích
+        </div>
 
-                <!-- Nhóm lọc Thể Loại (Categories) -->
-                <div class="flex flex-wrap items-center gap-2" id="category-filter-container">
-                    <!-- Sẽ được điền tự động bằng Javascript -->
-                </div>
-            </div>
+        <div class="sidebar-item p-3 rounded-xl cursor-pointer" onclick="openAdmin()">
+          <i class="fa-solid fa-lock mr-2"></i> Admin
+        </div>
+      </div>
+    </aside>
 
-            <!-- Lưới Danh Sách Bài Hát (Grid list) -->
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xl font-bold flex items-center gap-2">
-                        <span class="h-5 w-1 bg-brand-500 rounded-full"></span>
-                        Danh Sách Giai Điệu Dành Cho Bạn
-                    </h3>
-                    <span class="text-xs text-zinc-500" id="songs-count-badge">Tổng số: 0 bài</span>
-                </div>
+    <!-- Main -->
+    <main class="flex-1 p-5 pb-40">
 
-                <!-- Empty State khi không có nhạc -->
-                <div id="songs-empty-state" class="hidden flex-col items-center justify-center py-20 text-center bg-zinc-900/20 rounded-3xl border border-dashed border-zinc-800">
-                    <div class="w-16 h-16 rounded-full bg-zinc-900 flex items-center justify-center text-zinc-500 mb-4">
-                        <i class="fa-solid fa-music text-2xl"></i>
-                    </div>
-                    <p class="text-zinc-400 font-semibold">Chưa có bài hát nào được nhúng</p>
-                    <p class="text-zinc-600 text-xs mt-1">Vui lòng chuyển qua trang "Quản Lý Nhúng" để bắt đầu thêm bài hát mới!</p>
-                </div>
+      <!-- Search -->
+      <div class="flex justify-between items-center mb-8">
+        <div class="relative w-full md:w-96">
+          <input
+            type="text"
+            placeholder="Tìm bài hát, ca sĩ..."
+            class="w-full bg-[#2a1b3d] rounded-full px-5 py-3 outline-none"
+          />
+          <i class="fa-solid fa-search absolute right-5 top-4 text-gray-400"></i>
+        </div>
+      </div>
 
-                <!-- Container danh sách bài hát -->
-                <div id="songs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    <!-- Thẻ bài hát sẽ render động ở đây -->
-                </div>
-            </div>
-        </section>
+      <!-- Banner -->
+      <div class="glass rounded-3xl p-10 mb-10 bg-gradient-to-r from-purple-700 to-pink-600">
+        <h2 class="text-5xl font-bold mb-4">
+          🎧 Music Streaming Platform
+        </h2>
 
+        <p class="text-lg opacity-90">
+          Giao diện hiện đại kiểu ZingMP3 / Spotify
+        </p>
+      </div>
 
-        <!-- ============================================== -->
-        <!-- VIEW 2: TRANG QUẢN TRỊ NHÚNG NHẠC (ADMIN VIEW) -->
-        <!-- ============================================== -->
-        <section id="view-admin" class="space-y-8 hidden">
-            
-            <!-- Tiêu đề trang admin -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-gradient-to-r from-zinc-900 to-zinc-950 p-6 rounded-2xl border border-zinc-800">
-                <div>
-                    <h2 class="text-2xl font-extrabold flex items-center gap-2 text-white">
-                        <i class="fa-solid fa-toolbox text-brand-500"></i> Bảng Điều Khiển Quản Lý Nhúng Nhạc
-                    </h2>
-                    <p class="text-zinc-400 text-xs mt-1">Thêm mới, sửa đổi và kiểm soát danh sách nhạc nhúng hiển thị trên trang chủ của bạn.</p>
-                </div>
-                <!-- Nút thao tác nhanh -->
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="openAddTrackModal()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300 shadow-lg shadow-brand-500/10">
-                        <i class="fa-solid fa-plus"></i> Nhúng Bài Hát Mới
-                    </button>
-                    <button onclick="resetToSampleData()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300">
-                        <i class="fa-solid fa-rotate-left"></i> Khôi Phục Mẫu
-                    </button>
-                    <button onclick="logoutAdmin()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-2 transition duration-300">
-                        <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
-                    </button>
-                </div>
-            </div>
+      <!-- Songs -->
+      <div class="flex justify-between items-center mb-5">
+        <h2 class="text-2xl font-bold">
+          🔥 Trending Songs
+        </h2>
+      </div>
 
-            <!-- Chỉ số Thống Kê Nhanh (Quick Stats) -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-brand-500/10 text-brand-500 flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-solid fa-music"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-zinc-400 uppercase font-semibold">Tổng Bài Hát</p>
-                        <p class="text-lg font-bold" id="stat-total">0</p>
-                    </div>
-                </div>
-                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-brands fa-youtube"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-zinc-400 uppercase font-semibold">YouTube Links</p>
-                        <p class="text-lg font-bold" id="stat-youtube">0</p>
-                    </div>
-                </div>
-                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-brands fa-soundcloud"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-zinc-400 uppercase font-semibold">SoundCloud</p>
-                        <p class="text-lg font-bold" id="stat-soundcloud">0</p>
-                    </div>
-                </div>
-                <div class="bg-zinc-900/50 p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-green-500/10 text-green-500 flex items-center justify-center text-lg shrink-0">
-                        <i class="fa-brands fa-spotify"></i>
-                    </div>
-                    <div>
-                        <p class="text-[10px] text-zinc-400 uppercase font-semibold">Spotify / Khác</p>
-                        <p class="text-lg font-bold" id="stat-spotify">0</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Split Panel: Form Thêm Mới & Danh Sách Quản Lý -->
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                <!-- Cột Trái: Biểu Mẫu Nhúng (Nhập liệu trực tiếp) -->
-                <div class="xl:col-span-1 bg-zinc-900/60 p-6 rounded-2xl border border-zinc-800 space-y-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-plus-circle text-brand-500"></i>
-                            <span id="form-action-title">Nhúng Bài Hát Mới</span>
-                        </h3>
-                        <p class="text-zinc-500 text-xs mt-1">Điền link từ YouTube, SoundCloud, Spotify hoặc dán mã iframe của bạn.</p>
-                    </div>
-
-                    <form id="track-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                        <input type="hidden" id="track-id">
-                        
-                        <!-- Tên bài hát -->
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Tên Bài Hát <span class="text-red-500">*</span></label>
-                            <input type="text" id="track-title" required placeholder="Ví dụ: Nơi Này Có Anh" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white">
-                        </div>
-
-                        <!-- Ca sĩ / Nghệ sĩ -->
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Ca Sĩ / Nghệ Sĩ <span class="text-red-500">*</span></label>
-                            <input type="text" id="track-artist" required placeholder="Ví dụ: Sơn Tùng M-TP" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white">
-                        </div>
-
-                        <!-- Thể loại & Nguồn nhúng -->
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Thể Loại <span class="text-red-500">*</span></label>
-                                <input type="text" id="track-category" required list="category-suggestions" placeholder="V-Pop, EDM, Rap..." class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white">
-                                <datalist id="category-suggestions">
-                                    <option value="V-Pop">
-                                    <option value="US-UK">
-                                    <option value="K-Pop">
-                                    <option value="EDM / Dance">
-                                    <option value="Lo-Fi Chill">
-                                    <option value="Rap Việt">
-                                    <option value="Acoustic">
-                                </datalist>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Nguồn Nhúng <span class="text-red-500">*</span></label>
-                                <select id="track-platform" onchange="onPlatformChange()" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white">
-                                    <option value="youtube">YouTube (Video/Audio)</option>
-                                    <option value="soundcloud">SoundCloud</option>
-                                    <option value="spotify">Spotify</option>
-                                    <option value="custom">Iframe Tùy Chọn</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Đường link âm nhạc / Mã nhúng -->
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
-                                <span id="label-embed-url">Đường Dẫn Link Hoặc ID <span class="text-red-500">*</span></span>
-                            </label>
-                            <textarea id="track-url" required rows="3" placeholder="Nhập liên kết bài hát (YouTube URL, SoundCloud Share Link hoặc mã nhúng <iframe>)" class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white font-mono text-xs"></textarea>
-                            <p class="text-[10px] text-zinc-500 mt-1" id="embed-tip">
-                                Dán link YouTube (ví dụ: https://www.youtube.com/watch?v=dQw4w9WgXcQ) hệ thống sẽ tự động trích lọc ID chuẩn.
-                            </p>
-                        </div>
-
-                        <!-- Đường link ảnh Cover Art -->
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Ảnh Đại Diện (Cover Image URL)</label>
-                            <input type="url" id="track-cover" placeholder="Link ảnh JPG/PNG. Để trống hệ thống tự lấy từ YouTube." class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white">
-                        </div>
-
-                        <!-- Lời bài hát hoặc Mô tả tóm tắt -->
-                        <div>
-                            <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Lời Bài Hát / Mô Tả Ngắn</label>
-                            <textarea id="track-lyrics" rows="3" placeholder="Dán lời bài hát ở đây để hiển thị khi phát nhạc..." class="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white text-xs"></textarea>
-                        </div>
-
-                        <!-- Các nút điều khiển Form -->
-                        <div class="flex items-center gap-2 pt-2">
-                            <button type="submit" class="flex-1 bg-gradient-to-tr from-brand-500 to-indigo-600 hover:from-brand-600 hover:to-indigo-700 text-white py-3 rounded-xl font-bold text-xs transition duration-300 shadow-md">
-                                <i class="fa-solid fa-save mr-1"></i> Lưu Bài Hát
-                            </button>
-                            <button type="button" onclick="resetForm()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-400 py-3 px-4 rounded-xl font-bold text-xs transition duration-300">
-                                Hủy
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Cột Phải: Danh Sách Tổng Hợp & Quản Lý Sửa/Xóa -->
-                <div class="xl:col-span-2 space-y-4">
-                    <!-- Hướng dẫn nhúng nhanh -->
-                    <div class="bg-gradient-to-r from-blue-950/40 to-indigo-950/40 p-4 rounded-2xl border border-blue-500/10 flex items-start gap-4">
-                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm shrink-0">
-                            <i class="fa-solid fa-circle-info"></i>
-                        </div>
-                        <div class="text-xs space-y-1">
-                            <p class="font-bold text-blue-300">💡 Hướng Dẫn Cách Lấy Nhúng Nhanh:</p>
-                            <ul class="list-disc pl-4 space-y-1 text-zinc-400">
-                                <li><strong>YouTube:</strong> Dán link trình duyệt thông thường hoặc mã chia sẻ rút gọn. Hệ thống sẽ tự xử lý.</li>
-                                <li><strong>SoundCloud:</strong> Lấy mã nhúng HTML bằng cách bấm nút <span class="text-white">Share -> Embed</span> trên SoundCloud, dán nguyên cụm vào đây.</li>
-                                <li><strong>Spotify:</strong> Click vào ba chấm góc bài hát -> <span class="text-white">Share -> Embed Track</span> để lấy mã nhúng.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!-- Bảng quản lý -->
-                    <div class="bg-zinc-900/40 rounded-2xl border border-zinc-800 overflow-hidden">
-                        <div class="p-4 border-b border-zinc-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                            <h4 class="font-bold text-sm text-white">Quản Lý Danh Sách Gốc</h4>
-                            <div class="relative w-full sm:w-64">
-                                <input type="text" id="admin-search-input" onkeyup="filterAdminTracks()" placeholder="Tìm nhanh trong danh sách..." class="w-full pl-9 pr-3 py-1.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs focus:outline-none focus:border-brand-500">
-                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
-                                    <i class="fa-solid fa-search text-xs"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Table render -->
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-zinc-950/50 border-b border-zinc-800 text-[10px] text-zinc-400 uppercase tracking-wider">
-                                        <th class="py-3 px-4 font-semibold">Bài hát / Nghệ sĩ</th>
-                                        <th class="py-3 px-4 font-semibold">Thể loại</th>
-                                        <th class="py-3 px-4 font-semibold">Nguồn</th>
-                                        <th class="py-3 px-4 font-semibold text-right">Thao tác</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="admin-tracks-tbody" class="divide-y divide-zinc-800/60 text-xs">
-                                    <!-- Dynamic rows from script -->
-                                </tbody>
-                            </table>
-                            <div id="admin-empty-state" class="hidden py-12 text-center text-zinc-500">
-                                Không tìm thấy bài hát nào phù hợp.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+      <div id="songList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      </div>
 
     </main>
+  </div>
 
-    <!-- ============================================== -->
-    <!-- PLAYER MODAL / DRAWER (TRÌNH PHÁT NHẠC XỊN SÒ) -->
-    <!-- ============================================== -->
-    <div id="player-modal" class="fixed inset-0 z-50 bg-brand-dark/95 backdrop-blur-md hidden flex-col justify-between p-4 lg:p-8 overflow-y-auto">
-        
-        <!-- Header Player -->
-        <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
-            <div class="flex items-center gap-3">
-                <span class="bg-brand-500/10 text-brand-500 px-3 py-1 rounded-full text-xs font-extrabold flex items-center gap-2 border border-brand-500/20">
-                    <span class="animate-pulse bg-brand-500 h-2 w-2 rounded-full"></span>
-                    ĐANG PHÁT CHI TIẾT
-                </span>
+  <!-- Player -->
+  <div class="fixed bottom-0 left-0 right-0 glass p-4 border-t border-white/10">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+
+      <div class="flex items-center gap-4">
+        <img id="playerCover"
+          src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600"
+          class="w-16 h-16 rounded-xl object-cover"
+        />
+
+        <div>
+          <h3 id="playerTitle" class="font-bold">
+            Chưa phát nhạc
+          </h3>
+
+          <p id="playerArtist" class="text-sm text-gray-300">
+            ---
+          </p>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-center flex-1 max-w-2xl">
+
+        <div class="flex gap-5 text-xl mb-3">
+          <button onclick="prevSong()">
+            <i class="fa-solid fa-backward-step"></i>
+          </button>
+
+          <button onclick="togglePlay()" class="text-3xl">
+            <i id="playIcon" class="fa-solid fa-circle-play"></i>
+          </button>
+
+          <button onclick="nextSong()">
+            <i class="fa-solid fa-forward-step"></i>
+          </button>
+        </div>
+
+        <div class="w-full bg-gray-700 rounded-full h-2 cursor-pointer" onclick="seek(event)">
+          <div id="progress" class="bg-purple-500 h-2 rounded-full progress"></div>
+        </div>
+      </div>
+
+      <div>
+        <input type="range" min="0" max="1" step="0.1" value="1" onchange="changeVolume(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden Audio -->
+  <audio id="audio"></audio>
+
+  <!-- Admin Login Modal -->
+  <div id="adminModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+
+    <div class="glass p-8 rounded-3xl w-96">
+      <h2 class="text-3xl font-bold mb-6 text-center text-purple-400">
+        🔐 Admin Login
+      </h2>
+
+      <input
+        id="adminUser"
+        type="text"
+        placeholder="Username"
+        class="w-full mb-4 bg-[#2a1b3d] p-3 rounded-xl outline-none"
+      />
+
+      <input
+        id="adminPass"
+        type="password"
+        placeholder="Password"
+        class="w-full mb-4 bg-[#2a1b3d] p-3 rounded-xl outline-none"
+      />
+
+      <button
+        onclick="loginAdmin()"
+        class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded-xl font-bold"
+      >
+        Đăng nhập
+      </button>
+
+      <button
+        onclick="closeAdmin()"
+        class="w-full mt-3 bg-gray-700 p-3 rounded-xl"
+      >
+        Đóng
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="admin-panel fixed inset-0 bg-[#120b1c] z-50 overflow-y-auto p-10">
+
+    <div class="flex justify-between items-center mb-10">
+      <h2 class="text-4xl font-bold text-purple-400">
+        🎛️ Admin Dashboard
+      </h2>
+
+      <button onclick="closePanel()" class="bg-red-500 px-5 py-2 rounded-xl">
+        Đóng
+      </button>
+    </div>
+
+    <div class="glass p-6 rounded-3xl mb-10">
+
+      <h3 class="text-2xl font-bold mb-5">
+        ➕ Upload / Add Music
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-5">
+
+        <input id="title" type="text" placeholder="Tên bài hát"
+          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+        <input id="artist" type="text" placeholder="Ca sĩ"
+          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+        <input id="cover" type="text" placeholder="Link ảnh cover"
+          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+        <input id="audioUrl" type="text" placeholder="Link MP3"
+          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+      </div>
+
+      <button
+        onclick="addSong()"
+        class="mt-5 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold"
+      >
+        Thêm bài hát
+      </button>
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-bold mb-5">
+        🎵 Quản lý nhạc
+      </h3>
+
+      <div id="adminSongs" class="space-y-4">
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+
+    let songs = [
+      {
+        title: 'Dreams',
+        artist: 'Tanhenry',
+        cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600',
+        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+      },
+      {
+        title: 'Night Chill',
+        artist: 'LoFi Studio',
+        cover: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600',
+        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+      },
+      {
+        title: 'Relax Mood',
+        artist: 'Chill Music',
+        cover: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=600',
+        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+      }
+    ]
+
+    const songList = document.getElementById('songList')
+    const adminSongs = document.getElementById('adminSongs')
+    const audio = document.getElementById('audio')
+
+    let currentSong = 0
+    let isPlaying = false
+
+    function renderSongs() {
+
+      songList.innerHTML = ''
+      adminSongs.innerHTML = ''
+
+      songs.forEach((song, index) => {
+
+        songList.innerHTML += `
+          <div class="song-card glass rounded-3xl overflow-hidden cursor-pointer">
+
+            <img src="${song.cover}"
+              class="w-full h-56 object-cover"
+            />
+
+            <div class="p-4">
+              <h3 class="font-bold text-lg mb-1">
+                ${song.title}
+              </h3>
+
+              <p class="text-gray-300 text-sm mb-4">
+                ${song.artist}
+              </p>
+
+              <button
+                onclick="playSong(${index})"
+                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-xl w-full"
+              >
+                ▶ Phát nhạc
+              </button>
             </div>
-            <!-- Nút đóng -->
-            <button onclick="closePlayer()" class="w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition duration-300">
-                <i class="fa-solid fa-xmark text-lg"></i>
+          </div>
+        `
+
+        adminSongs.innerHTML += `
+          <div class="glass p-5 rounded-2xl flex justify-between items-center flex-wrap gap-4">
+
+            <div class="flex items-center gap-4">
+              <img src="${song.cover}" class="w-16 h-16 rounded-xl object-cover">
+
+              <div>
+                <h4 class="font-bold">${song.title}</h4>
+                <p class="text-gray-400 text-sm">${song.artist}</p>
+              </div>
+            </div>
+
+            <button
+              onclick="deleteSong(${index})"
+              class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-xl"
+            >
+              Xóa
             </button>
-        </div>
-
-        <!-- Body Player Layout -->
-        <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center my-6 max-w-6xl mx-auto w-full">
-            
-            <!-- Cột trái (7/12): Embed Player (Khung phát nội dung video/audio) -->
-            <div class="lg:col-span-7 flex flex-col gap-4 w-full">
-                <!-- Wrapper responsive giữ tỉ lệ 16:9 cho Iframe -->
-                <div class="relative w-full aspect-video rounded-3xl overflow-hidden bg-black shadow-2xl border border-zinc-800">
-                    <div id="iframe-player-container" class="absolute inset-0 w-full h-full">
-                        <!-- Iframe động sẽ thay thế vào đây -->
-                    </div>
-                </div>
-                <!-- Nguồn nhúng badge -->
-                <div class="flex items-center justify-between px-2">
-                    <span id="player-source-badge" class="text-xs text-zinc-500 font-semibold flex items-center gap-1.5">
-                        <i class="fa-solid fa-link"></i> Nguồn phát: YouTube
-                    </span>
-                    <button id="btn-copy-embed" onclick="copyCurrentEmbed()" class="text-xs text-brand-500 hover:underline flex items-center gap-1">
-                        <i class="fa-regular fa-copy"></i> Sao chép mã nhúng
-                    </button>
-                </div>
-            </div>
-
-            <!-- Cột phải (5/12): Metadata, Cover & Lyrics -->
-            <div class="lg:col-span-5 flex flex-col gap-6 h-full justify-center">
-                <div class="flex gap-4 items-center">
-                    <img id="player-cover-img" src="" alt="Album Art" class="w-20 h-20 rounded-2xl object-cover shadow-lg border border-zinc-700">
-                    <div>
-                        <h3 id="player-title" class="text-2xl font-black text-white leading-tight">--</h3>
-                        <p id="player-artist" class="text-sm text-zinc-400 mt-1">--</p>
-                        <span id="player-category" class="inline-block mt-2 text-[10px] bg-brand-500/10 text-brand-500 px-2.5 py-1 rounded-full font-bold uppercase">--</span>
-                    </div>
-                </div>
-
-                <!-- Lời bài hát / Ghi chú -->
-                <div class="bg-zinc-950/80 p-5 rounded-2xl border border-zinc-800 flex flex-col gap-3 flex-1 min-h-[180px] max-h-[300px] overflow-y-auto">
-                    <p class="text-xs font-bold text-zinc-400 flex items-center gap-1.5 uppercase tracking-wider">
-                        <i class="fa-solid fa-quote-left text-brand-500"></i> Lời Bài Hát / Lời Tựa
-                    </p>
-                    <div id="player-lyrics" class="text-xs leading-relaxed text-zinc-300 font-medium whitespace-pre-wrap italic">
-                        Không có lời bài hát.
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Footer Player: Navigation bài tiếp theo / Gợi ý nhanh -->
-        <div class="border-t border-zinc-800 pt-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-xs text-zinc-500">Cảm ơn bạn đã lựa chọn trải nghiệm tại MuzikVibe!</p>
-            <div class="flex gap-2">
-                <button onclick="playPrevSong()" class="bg-zinc-900 hover:bg-zinc-800 px-4 py-2 rounded-xl text-xs font-bold text-zinc-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-backward"></i> Bài Trước
-                </button>
-                <button onclick="playNextSong()" class="bg-brand-500 hover:bg-brand-600 px-4 py-2 rounded-xl text-xs font-bold text-white flex items-center gap-1.5">
-                    Bài Kế Tiếp <i class="fa-solid fa-forward"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ============================================== -->
-    <!-- LOGIN MODAL (Màn hình khóa trang quản lý) -->
-    <!-- ============================================== -->
-    <div id="login-modal" class="fixed inset-0 z-50 bg-brand-dark/95 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-md rounded-3xl p-8 space-y-6 shadow-2xl border border-brand-500/20">
-            <div class="text-center space-y-2">
-                <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-500 to-pink-500 flex items-center justify-center text-white text-2xl shadow-lg shadow-brand-500/20">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <h3 class="text-2xl font-black text-white">Xác Thực Quản Trị</h3>
-                <p class="text-zinc-400 text-xs">Vui lòng đăng nhập để truy cập công cụ quản lý nhúng nhạc</p>
-            </div>
-            
-            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Tài khoản</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-500">
-                            <i class="fa-solid fa-user text-sm"></i>
-                        </span>
-                        <input type="text" id="login-username" required placeholder="Nhập tài khoản" class="w-full pl-11 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white placeholder-zinc-700">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">Mật khẩu</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-zinc-500">
-                            <i class="fa-solid fa-key text-sm"></i>
-                        </span>
-                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-11 pr-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm focus:outline-none focus:border-brand-500 text-white placeholder-zinc-700">
-                    </div>
-                </div>
-                <div class="flex gap-2 pt-2">
-                    <button type="submit" class="flex-1 bg-gradient-to-r from-brand-500 to-pink-500 hover:from-brand-600 hover:to-pink-600 text-white py-3 rounded-xl font-bold text-xs transition duration-300 shadow-lg shadow-brand-500/10">
-                        Đăng Nhập
-                    </button>
-                    <button type="button" onclick="closeLoginModal()" class="bg-zinc-900 hover:bg-zinc-800 text-zinc-400 py-3 px-4 rounded-xl font-bold text-xs transition duration-300">
-                        Hủy bỏ
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- Footer tổng trang web -->
-    <footer class="bg-zinc-950 border-t border-zinc-900 py-6 text-center text-xs text-zinc-500 space-y-2 mt-auto">
-        <p>&copy; 2026 MuzikVibe. Được thiết kế cho trải nghiệm mượt mà.</p>
-        <p class="text-[10px]">Phát triển dựa trên các API nhúng hợp chuẩn từ YouTube, SoundCloud & Spotify.</p>
-    </footer>
-
-    <!-- Hộp thông báo Popup thay thế cho Alert() -->
-    <div id="toast-message" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 bg-brand-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl border border-brand-500/20 flex items-center gap-3 transition-all duration-300 pointer-events-none">
-        <i id="toast-icon" class="fa-solid fa-check-circle"></i>
-        <span id="toast-text">Thành công!</span>
-    </div>
-
-
-    <!-- ============================================== -->
-    <!-- JAVASCRIPT LOGIC & STATE MANAGEMENT -->
-    <!-- ============================================== -->
-    <script>
-        // Dữ liệu mẫu ban đầu để trang web sinh động ngay khi mở
-        const sampleTracks = [
-            {
-                id: "1",
-                title: "Vây Giữ (Lofi Ver)",
-                artist: "Đông Thiên Đức x Hoài Lâm",
-                category: "Lo-Fi Chill",
-                platform: "youtube",
-                url: "https://www.youtube.com/watch?v=R9_uM6p17Yw",
-                cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=500&q=80",
-                lyrics: "[00:10.00] Vây giữ anh lại trong ký ức ngọt ngào.\n[00:20.00] Gửi trao những đắm say thở dài...\n[00:30.00] Những ngày mưa rơi rơi lòng thắt lại\n[00:40.00] Em đi rồi, ta vây giữ nỗi buồn của ngày hôm qua."
-            },
-            {
-                id: "2",
-                title: "Lofi Hip Hop Radio - Beats to Relax/Study to",
-                artist: "Lofi Girl",
-                category: "EDM / Dance",
-                platform: "youtube",
-                url: "https://www.youtube.com/watch?v=jfKfPfyJRdk",
-                cover: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=500&q=80",
-                lyrics: "Nguồn nhạc lofi stream trực tiếp 24/7 từ Lofi Girl.\nPhù hợp để chill, làm việc học tập tập trung nhất.\nNo lyrics available for Live stream!"
-            },
-            {
-                id: "3",
-                title: "SoundCloud Chill Sunset Set",
-                artist: "Chill Beats Collection",
-                category: "Acoustic",
-                platform: "soundcloud",
-                url: `<iframe width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1149953860&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"></iframe>`,
-                cover: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?auto=format&fit=crop&w=500&q=80",
-                lyrics: "Bản mix nhạc cụ dịu êm tuyệt vời nhúng trực tiếp từ SoundCloud.\nMở loa lên và thả hồn theo từng tiếng gảy đàn mộc mạc."
-            },
-            {
-                id: "4",
-                title: "Spotify Hit Track Playlist",
-                artist: "Global Artists Collection",
-                category: "US-UK",
-                platform: "spotify",
-                url: "https://open.spotify.com/embed/track/17S497v76irXZvYvZ90mS7",
-                cover: "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=500&q=80",
-                lyrics: "Bản Hit tuyển chọn hàng đầu nhúng từ hạ tầng Spotify chính thống."
-            }
-        ];
-
-        // Khởi tạo các biến quản lý trạng thái chính
-        let tracks = [];
-        let currentFilterCategory = "all";
-        let activeSongIndex = -1;
-
-        // Khi tải trang xong
-        window.onload = function() {
-            initApp();
-        };
-
-        // Khởi động ứng dụng
-        function initApp() {
-            // Đọc dữ liệu từ LocalStorage hoặc gán dữ liệu mẫu nếu chưa có gì
-            const storedTracks = localStorage.getItem('muzikvibe_tracks');
-            if (storedTracks) {
-                tracks = JSON.parse(storedTracks);
-            } else {
-                tracks = [...sampleTracks];
-                localStorage.setItem('muzikvibe_tracks', JSON.stringify(tracks));
-            }
-
-            renderCategoryFilters();
-            renderUserSongs();
-            renderAdminTracks();
-            updateStats();
-        }
-
-        // Chuyển đổi giao diện (SPA)
-        function switchView(view) {
-            const viewUser = document.getElementById('view-user');
-            const viewAdmin = document.getElementById('view-admin');
-            const btnUser = document.getElementById('btn-user-mode');
-            const btnAdmin = document.getElementById('btn-admin-mode');
-
-            if (view === 'user') {
-                viewUser.classList.remove('hidden');
-                viewUser.classList.add('block');
-                viewAdmin.classList.add('hidden');
-                viewAdmin.classList.remove('block');
-
-                btnUser.classList.add('bg-brand-500', 'text-white');
-                btnUser.classList.remove('text-zinc-400', 'hover:text-white');
-                btnAdmin.classList.remove('bg-brand-500', 'text-white');
-                btnAdmin.classList.add('text-zinc-400', 'hover:text-white');
-                
-                // Cập nhật lại list bên user
-                renderUserSongs();
-            } else {
-                // Kiểm tra xem đã đăng nhập thành công trong phiên làm việc hiện tại hay chưa
-                const isLoggedIn = sessionStorage.getItem('muzikvibe_admin_logged') === 'true';
-                if (!isLoggedIn) {
-                    openLoginModal();
-                    return;
-                }
-
-                viewAdmin.classList.remove('hidden');
-                viewAdmin.classList.add('block');
-                viewUser.classList.add('hidden');
-                viewUser.classList.remove('block');
-
-                btnAdmin.classList.add('bg-brand-500', 'text-white');
-                btnAdmin.classList.remove('text-zinc-400', 'hover:text-white');
-                btnUser.classList.remove('bg-brand-500', 'text-white');
-                btnUser.classList.add('text-zinc-400', 'hover:text-white');
-
-                // Cập nhật lại list bên admin
-                renderAdminTracks();
-                updateStats();
-            }
-        }
-
-        // Tạo bộ lọc thể loại tự động từ kho nhạc hiện có
-        function renderCategoryFilters() {
-            const container = document.getElementById('category-filter-container');
-            const categories = new Set();
-            categories.add("Tất cả");
-            
-            tracks.forEach(t => {
-                if(t.category) categories.add(t.category);
-            });
-
-            container.innerHTML = "";
-            categories.forEach(cat => {
-                const isSelected = (currentFilterCategory === "all" && cat === "Tất cả") || (currentFilterCategory === cat);
-                const btn = document.createElement('button');
-                btn.onclick = () => {
-                    currentFilterCategory = (cat === "Tất cả") ? "all" : cat;
-                    renderCategoryFilters();
-                    renderUserSongs();
-                };
-                
-                btn.className = isSelected 
-                    ? "px-4 py-1.5 rounded-xl text-xs font-bold bg-brand-500 text-white transition duration-300"
-                    : "px-4 py-1.5 rounded-xl text-xs font-semibold bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-white transition duration-300";
-                
-                btn.innerText = cat;
-                container.appendChild(btn);
-            });
-        }
-
-        // Tạo lưới nhạc hiển thị phía người dùng
-        function renderUserSongs() {
-            const grid = document.getElementById('songs-grid');
-            const emptyState = document.getElementById('songs-empty-state');
-            const searchVal = document.getElementById('user-search-input').value.toLowerCase().trim();
-
-            // Lọc bài hát theo thể loại và từ khóa tìm kiếm
-            const filtered = tracks.filter(t => {
-                const matchCategory = (currentFilterCategory === "all" || t.category === currentFilterCategory);
-                const matchSearch = t.title.toLowerCase().includes(searchVal) || 
-                                    t.artist.toLowerCase().includes(searchVal) || 
-                                    t.category.toLowerCase().includes(searchVal);
-                return matchCategory && matchSearch;
-            });
-
-            document.getElementById('songs-count-badge').innerText = `Kết quả: ${filtered.length} bài`;
-
-            if (filtered.length === 0) {
-                grid.innerHTML = "";
-                emptyState.classList.remove('hidden');
-                emptyState.classList.add('flex');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            emptyState.classList.remove('flex');
-
-            grid.innerHTML = filtered.map((song, index) => {
-                const actualIndex = tracks.findIndex(t => t.id === song.id);
-                const platformIcon = getPlatformIcon(song.platform);
-                return `
-                    <div class="glass-panel rounded-3xl overflow-hidden group hover:border-brand-500/30 transition-all duration-300 flex flex-col justify-between glow-hover">
-                        <!-- Thumbnail Area -->
-                        <div class="relative aspect-square overflow-hidden bg-zinc-900 group">
-                            <img src="${song.cover || 'https://placehold.co/500x500/121214/ffffff?text=MuzikVibe'}" alt="${song.title}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                            <!-- Hover Play Button overlay -->
-                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-300">
-                                <button onclick="openPlayerAt(${actualIndex})" class="w-14 h-14 rounded-full bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center text-lg transform translate-y-4 group-hover:translate-y-0 transition duration-300 shadow-xl">
-                                    <i class="fa-solid fa-play ml-1"></i>
-                                </button>
-                            </div>
-                            <!-- Platform badge -->
-                            <div class="absolute top-3 right-3 bg-zinc-950/80 backdrop-blur-md text-white w-8 h-8 rounded-xl flex items-center justify-center border border-white/10 text-xs">
-                                ${platformIcon}
-                            </div>
-                        </div>
-
-                        <!-- Info Area -->
-                        <div class="p-5 space-y-3">
-                            <div>
-                                <h4 class="font-extrabold text-sm text-white line-clamp-1 hover:text-brand-500 cursor-pointer" onclick="openPlayerAt(${actualIndex})">${song.title}</h4>
-                                <p class="text-zinc-400 text-xs line-clamp-1 mt-0.5">${song.artist}</p>
-                            </div>
-                            <div class="flex items-center justify-between text-[11px] pt-2 border-t border-zinc-800/60">
-                                <span class="bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-800 text-zinc-400 font-semibold">${song.category}</span>
-                                <button onclick="openPlayerAt(${actualIndex})" class="text-brand-500 hover:underline font-bold flex items-center gap-1">
-                                    Bật nhạc <i class="fa-solid fa-chevron-right text-[9px]"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // Trích xuất ID youtube hoặc URL chuẩn để nhúng
-        function parseEmbedUrl(platform, inputStr) {
-            inputStr = inputStr.trim();
-            if (platform === 'youtube') {
-                // Nhận diện mã nhúng đầy đủ (iframe)
-                if (inputStr.includes('iframe')) {
-                    const match = inputStr.match(/src=["']([^"']+)["']/);
-                    if (match && match[1]) return match[1];
-                }
-                
-                // Nhận diện link youtube bình thường
-                let videoId = '';
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                const match = inputStr.match(regExp);
-                
-                if (match && match[2].length == 11) {
-                    videoId = match[2];
-                    return `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
-                }
-                
-                // Nếu người dùng chỉ nhập đúng 11 chữ số ID
-                if(inputStr.length === 11) {
-                    return `https://www.youtube.com/embed/${inputStr}?autoplay=1&enablejsapi=1`;
-                }
-                return inputStr;
-            }
-
-            if (platform === 'soundcloud') {
-                // Thường Soundcloud bắt buộc dùng mã nhúng iframe của họ.
-                if (inputStr.includes('<iframe')) {
-                    const match = inputStr.match(/src=["']([^"']+)["']/);
-                    if (match && match[1]) {
-                        // Thêm autoplay nếu muốn
-                        return match[1];
-                    }
-                }
-                // Nếu dán link gốc, khuyến cáo nhúng qua API widget
-                if (inputStr.startsWith('http')) {
-                    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(inputStr)}&auto_play=true`;
-                }
-                return inputStr;
-            }
-
-            if (platform === 'spotify') {
-                if (inputStr.includes('iframe')) {
-                    const match = inputStr.match(/src=["']([^"']+)["']/);
-                    if (match && match[1]) return match[1];
-                }
-                // Chuyển link gốc track sang embed track
-                // ví dụ: https://open.spotify.com/track/17S497v76irXZvYvZ90mS7 -> https://open.spotify.com/embed/track/17S497v76irXZvYvZ90mS7
-                if (inputStr.includes('open.spotify.com')) {
-                    return inputStr.replace('open.spotify.com/', 'open.spotify.com/embed/');
-                }
-                return inputStr;
-            }
-
-            // Custom Iframe
-            if (inputStr.includes('iframe')) {
-                const match = inputStr.match(/src=["']([^"']+)["']/);
-                if (match && match[1]) return match[1];
-            }
-            return inputStr;
-        }
-
-        // Tự lấy thumbnail youtube nếu rỗng
-        function getCoverImage(platform, inputStr, coverInput) {
-            if (coverInput && coverInput.trim() !== '') {
-                return coverInput.trim();
-            }
-            if (platform === 'youtube') {
-                let videoId = '';
-                const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-                const match = inputStr.match(regExp);
-                if (match && match[2].length == 11) {
-                    videoId = match[2];
-                    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                } else if(inputStr.length === 11) {
-                    return `https://img.youtube.com/vi/${inputStr}/hqdefault.jpg`;
-                }
-            }
-            // Fallback ảnh đĩa nhạc tuyệt đẹp phong cách neon
-            return "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=500&q=80";
-        }
-
-        // Lấy icon biểu tượng nguồn phát
-        function getPlatformIcon(platform) {
-            switch(platform) {
-                case 'youtube': return '<i class="fa-brands fa-youtube text-red-500"></i>';
-                case 'soundcloud': return '<i class="fa-brands fa-soundcloud text-orange-500"></i>';
-                case 'spotify': return '<i class="fa-brands fa-spotify text-green-500"></i>';
-                default: return '<i class="fa-solid fa-code text-blue-400"></i>';
-            }
-        }
-
-        // Tìm kiếm nhanh phía khách hàng
-        function filterSongs() {
-            renderUserSongs();
-        }
-
-        // Phát Bản Hot nổi bật ở Banner
-        function playFeaturedSong() {
-            if(tracks.length > 0) {
-                openPlayerAt(0);
-            } else {
-                showToast("Vui lòng thêm nhạc trước trong trang Admin!", "error");
-            }
-        }
-
-        // ==============================================
-        // TRÌNH PHÁT NHẠC (INTEGRATED EMBEDDED PLAYER)
-        // ==============================================
-        // Mở trình nghe nhạc bài cụ thể
-        function openPlayerAt(index) {
-            if (index < 0 || index >= tracks.length) return;
-            activeSongIndex = index;
-            const song = tracks[index];
-
-            // Cập nhật thông tin text hiển thị
-            document.getElementById('player-title').innerText = song.title;
-            document.getElementById('player-artist').innerText = song.artist;
-            document.getElementById('player-category').innerText = song.category;
-            document.getElementById('player-lyrics').innerText = song.lyrics || "Chưa cập nhật lời hoặc phụ đề cho bài hát này.";
-            document.getElementById('player-cover-img').src = song.cover || 'https://placehold.co/500x500/121214/ffffff?text=MuzikVibe';
-
-            let srcUrl = parseEmbedUrl(song.platform, song.url);
-            
-            // Render thẻ Iframe chuẩn xác
-            const playerContainer = document.getElementById('iframe-player-container');
-            playerContainer.innerHTML = `
-                <iframe 
-                    src="${srcUrl}" 
-                    class="w-full h-full" 
-                    frameborder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    allowfullscreen>
-                </iframe>
-            `;
-
-            // Badge nguồn phát
-            document.getElementById('player-source-badge').innerHTML = `
-                <i class="fa-solid fa-link"></i> Nguồn phát: ${song.platform.toUpperCase()}
-            `;
-
-            // Mở Modal
-            document.getElementById('player-modal').classList.remove('hidden');
-            document.getElementById('player-modal').classList.add('flex');
-            
-            showToast(`Đang phát: ${song.title}`);
-        }
-
-        // Đóng trình phát
-        function closePlayer() {
-            document.getElementById('player-modal').classList.add('hidden');
-            document.getElementById('player-modal').classList.remove('flex');
-            // Xóa rỗng để ngừng phát tiếng từ iframe
-            document.getElementById('iframe-player-container').innerHTML = "";
-        }
-
-        // Phát bài trước đó
-        function playPrevSong() {
-            if(tracks.length <= 1) return;
-            let nextIndex = activeSongIndex - 1;
-            if(nextIndex < 0) nextIndex = tracks.length - 1;
-            openPlayerAt(nextIndex);
-        }
-
-        // Phát bài tiếp theo
-        function playNextSong() {
-            if(tracks.length <= 1) return;
-            let nextIndex = activeSongIndex + 1;
-            if(nextIndex >= tracks.length) nextIndex = 0;
-            openPlayerAt(nextIndex);
-        }
-
-        // Sao chép mã nhúng của bài hát đang phát
-        function copyCurrentEmbed() {
-            if(activeSongIndex === -1) return;
-            const song = tracks[activeSongIndex];
-            const embedSrc = parseEmbedUrl(song.platform, song.url);
-            const template = `<iframe width="100%" height="450" src="${embedSrc}" frameborder="0" allowfullscreen></iframe>`;
-            
-            const dummy = document.createElement("textarea");
-            document.body.appendChild(dummy);
-            dummy.value = template;
-            dummy.select();
-            document.execCommand("copy");
-            document.body.removeChild(dummy);
-
-            showToast("Đã copy iframe nhúng vào khay nhớ tạm!");
-        }
-
-        // ==============================================
-        // QUẢN TRỊ FORM & THAO TÁC DATA
-        // ==============================================
-        // Khi thay đổi nguồn platform trong form quản lý
-        function onPlatformChange() {
-            const platform = document.getElementById('track-platform').value;
-            const labelUrl = document.getElementById('label-embed-url');
-            const placeholderTip = document.getElementById('embed-tip');
-            const urlTextarea = document.getElementById('track-url');
-
-            if(platform === 'youtube') {
-                labelUrl.innerHTML = `Đường Dẫn YouTube <span class="text-red-500">*</span>`;
-                placeholderTip.innerText = "Dán link trình duyệt thông thường của YouTube hoặc link rút gọn. Ví dụ: https://www.youtube.com/watch?v=R9_uM6p17Yw";
-            } else if(platform === 'soundcloud') {
-                labelUrl.innerHTML = `Mã Nhúng Hoặc Link SoundCloud <span class="text-red-500">*</span>`;
-                placeholderTip.innerText = "Bấm 'Share' trên SoundCloud, chọn 'Embed' và copy dán mã <iframe> vào đây hoặc dán thẳng link bài.";
-            } else if(platform === 'spotify') {
-                labelUrl.innerHTML = `Mã Nhúng Hoặc Link Spotify <span class="text-red-500">*</span>`;
-                placeholderTip.innerText = "Chuột phải bài hát -> Share -> Embed track để lấy mã dán vào, hoặc dán thẳng link open.spotify.com/track/...";
-            } else {
-                labelUrl.innerHTML = `Mã Nhúng Iframe Tùy Chọn <span class="text-red-500">*</span>`;
-                placeholderTip.innerText = "Dán toàn bộ mã <iframe> chuẩn từ bất kỳ nền tảng chia sẻ nhạc/video nào.";
-            }
-        }
-
-        // Đẩy thông tin bài hát lên form để chỉnh sửa
-        function editTrack(id) {
-            const song = tracks.find(t => t.id === id);
-            if(!song) return;
-
-            document.getElementById('track-id').value = song.id;
-            document.getElementById('track-title').value = song.title;
-            document.getElementById('track-artist').value = song.artist;
-            document.getElementById('track-category').value = song.category;
-            document.getElementById('track-platform').value = song.platform;
-            document.getElementById('track-url').value = song.url;
-            document.getElementById('track-cover').value = song.cover || "";
-            document.getElementById('track-lyrics').value = song.lyrics || "";
-
-            document.getElementById('form-action-title').innerText = "Chỉnh Sửa Bản Nhúng";
-            onPlatformChange();
-            
-            // Cuộn lên form
-            document.getElementById('track-form').scrollIntoView({ behavior: 'smooth' });
-            showToast("Đã tải bài hát lên biểu mẫu sửa đổi!");
-        }
-
-        // Xóa một bài hát nhúng khỏi danh sách
-        function deleteTrack(id) {
-            if(confirm("Bạn có chắc chắn muốn gỡ bỏ liên kết bài hát này? Thao tác này không thể hoàn tác.")) {
-                tracks = tracks.filter(t => t.id !== id);
-                saveAndSync();
-                showToast("Đã xóa liên kết thành công!", "success");
-            }
-        }
-
-        // Submit xử lý form (Thêm mới / Cập nhật)
-        function handleFormSubmit(e) {
-            e.preventDefault();
-
-            const id = document.getElementById('track-id').value;
-            const title = document.getElementById('track-title').value.trim();
-            const artist = document.getElementById('track-artist').value.trim();
-            const category = document.getElementById('track-category').value.trim();
-            const platform = document.getElementById('track-platform').value;
-            const url = document.getElementById('track-url').value.trim();
-            const rawCover = document.getElementById('track-cover').value.trim();
-            const lyrics = document.getElementById('track-lyrics').value.trim();
-
-            if(!title || !artist || !category || !url) {
-                showToast("Vui lòng điền đầy đủ các thông tin có dấu sao đỏ (*)", "error");
-                return;
-            }
-
-            const cover = getCoverImage(platform, url, rawCover);
-
-            if (id) {
-                // Chế độ CẬP NHẬT (Update)
-                const index = tracks.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    tracks[index] = { id, title, artist, category, platform, url, cover, lyrics };
-                    showToast("Đã cập nhật bài hát nhúng thành công!");
-                }
-            } else {
-                // Chế độ THÊM MỚI (Create)
-                const newId = Date.now().toString();
-                tracks.push({ id: newId, title, artist, category, platform, url, cover, lyrics });
-                showToast("Đã nhúng thêm bài hát mới thành công!");
-            }
-
-            saveAndSync();
-            resetForm();
-        }
-
-        // Reset biểu mẫu nhập liệu
-        function resetForm() {
-            document.getElementById('track-id').value = "";
-            document.getElementById('track-title').value = "";
-            document.getElementById('track-artist').value = "";
-            document.getElementById('track-category').value = "";
-            document.getElementById('track-url').value = "";
-            document.getElementById('track-cover').value = "";
-            document.getElementById('track-lyrics').value = "";
-            document.getElementById('track-platform').value = "youtube";
-            document.getElementById('form-action-title').innerText = "Nhúng Bài Hát Mới";
-            onPlatformChange();
-        }
-
-        // Khôi phục dữ liệu mẫu để thử nghiệm nhanh
-        function resetToSampleData() {
-            if(confirm("Bạn có chắc chắn muốn khôi phục kho dữ liệu nhạc mẫu? Điều này sẽ xóa toàn bộ các bài hát tự nhúng hiện có của bạn.")) {
-                tracks = [...sampleTracks];
-                saveAndSync();
-                showToast("Khôi phục dữ liệu mẫu thành công!");
-            }
-        }
-
-        // Đồng bộ dữ liệu vào LocalStorage và Render lại toàn bộ giao diện
-        function saveAndSync() {
-            localStorage.setItem('muzikvibe_tracks', JSON.stringify(tracks));
-            renderCategoryFilters();
-            renderUserSongs();
-            renderAdminTracks();
-            updateStats();
-        }
-
-        // Render bảng quản lý Admin bên dưới
-        function renderAdminTracks() {
-            const tbody = document.getElementById('admin-tracks-tbody');
-            const emptyState = document.getElementById('admin-empty-state');
-            const searchVal = document.getElementById('admin-search-input').value.toLowerCase().trim();
-
-            const filtered = tracks.filter(t => {
-                return t.title.toLowerCase().includes(searchVal) || 
-                       t.artist.toLowerCase().includes(searchVal) || 
-                       t.category.toLowerCase().includes(searchVal);
-            });
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = "";
-                emptyState.classList.remove('hidden');
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-            tbody.innerHTML = filtered.map(t => {
-                const icon = getPlatformIcon(t.platform);
-                return `
-                    <tr class="hover:bg-zinc-900/40 transition">
-                        <td class="py-3 px-4 flex items-center gap-3">
-                            <img src="${t.cover || 'https://placehold.co/50x50/121214/ffffff?text=MuzikVibe'}" class="w-10 h-10 object-cover rounded-lg shrink-0 border border-zinc-800">
-                            <div>
-                                <p class="font-bold text-white line-clamp-1">${t.title}</p>
-                                <p class="text-zinc-400 text-[11px]">${t.artist}</p>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4 text-zinc-300">
-                            <span class="bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800">${t.category}</span>
-                        </td>
-                        <td class="py-3 px-4 text-zinc-400 capitalize">
-                            <span class="flex items-center gap-1.5">${icon} ${t.platform}</span>
-                        </td>
-                        <td class="py-3 px-4 text-right">
-                            <div class="flex items-center justify-end gap-1.5">
-                                <button onclick="editTrack('${t.id}')" class="w-8 h-8 rounded-lg hover:bg-zinc-800 text-blue-400 flex items-center justify-center transition" title="Sửa">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-                                <button onclick="deleteTrack('${t.id}')" class="w-8 h-8 rounded-lg hover:bg-zinc-800 text-red-500 flex items-center justify-center transition" title="Xóa">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // Lọc nhanh bảng Admin khi gõ tìm kiếm
-        function filterAdminTracks() {
-            renderAdminTracks();
-        }
-
-        // Cập nhật các thẻ số liệu thống kê
-        function updateStats() {
-            const total = tracks.length;
-            const youtube = tracks.filter(t => t.platform === 'youtube').length;
-            const soundcloud = tracks.filter(t => t.platform === 'soundcloud').length;
-            const spotify = tracks.filter(t => t.platform === 'spotify' || t.platform === 'custom').length;
-
-            document.getElementById('stat-total').innerText = total;
-            document.getElementById('stat-youtube').innerText = youtube;
-            document.getElementById('stat-soundcloud').innerText = soundcloud;
-            document.getElementById('stat-spotify').innerText = spotify;
-        }
-
-        // Mở nhanh modal thêm bài hát mới
-        function openAddTrackModal() {
-            resetForm();
-            document.getElementById('track-title').focus();
-            showToast("Bảng nhập liệu đã sẵn sàng!");
-        }
-
-        // Hiển thị hộp thông báo mượt mà thay thế alert
-        function showToast(message, type = "info") {
-            const toast = document.getElementById('toast-message');
-            const icon = document.getElementById('toast-icon');
-            const text = document.getElementById('toast-text');
-
-            text.innerText = message;
-            
-            if(type === 'error') {
-                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 bg-red-600 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all duration-300";
-                icon.className = "fa-solid fa-circle-exclamation";
-            } else {
-                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-0 opacity-100 bg-gradient-to-r from-brand-500 to-indigo-600 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all duration-300";
-                icon.className = "fa-solid fa-circle-check";
-            }
-
-            // Ẩn đi sau 3.5 giây
-            setTimeout(() => {
-                toast.className = "fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 bg-brand-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-xl border border-brand-500/20 flex items-center gap-3 transition-all duration-300 pointer-events-none";
-            }, 3500);
-        }
-
-        // Mở màn hình đăng nhập
-        function openLoginModal() {
-            document.getElementById('login-modal').classList.remove('hidden');
-            document.getElementById('login-username').value = "";
-            document.getElementById('login-password').value = "";
-            document.getElementById('login-username').focus();
-        }
-
-        // Đóng màn hình đăng nhập
-        function closeLoginModal() {
-            document.getElementById('login-modal').classList.add('hidden');
-        }
-
-        // Xử lý sự kiện đăng nhập xác thực tài khoản
-        function handleLogin(e) {
-            e.preventDefault();
-            const user = document.getElementById('login-username').value.trim();
-            const pass = document.getElementById('login-password').value;
-
-            // Xác thực tài khoản chỉ định
-            if (user === 'admin' && pass === '11011993') {
-                sessionStorage.setItem('muzikvibe_admin_logged', 'true');
-                closeLoginModal();
-                showToast("Đăng nhập thành công!", "success");
-                switchView('admin'); // Chuyển thẳng tới trang admin
-            } else {
-                showToast("Sai tài khoản hoặc mật khẩu!", "error");
-            }
-        }
-
-        // Đăng xuất khỏi hệ thống
-        function logoutAdmin() {
-            sessionStorage.removeItem('muzikvibe_admin_logged');
-            showToast("Đã đăng xuất tài khoản quản trị!");
-            switchView('user'); // Trở về trang người dùng
-        }
-    </script>
+          </div>
+        `
+      })
+    }
+
+    renderSongs()
+
+    function playSong(index) {
+
+      currentSong = index
+
+      const song = songs[index]
+
+      audio.src = song.audio
+      audio.play()
+
+      isPlaying = true
+
+      document.getElementById('playerTitle').innerText = song.title
+      document.getElementById('playerArtist').innerText = song.artist
+      document.getElementById('playerCover').src = song.cover
+
+      document.getElementById('playIcon').className = 'fa-solid fa-circle-pause'
+    }
+
+    function togglePlay() {
+
+      if (!audio.src) return
+
+      if (isPlaying) {
+        audio.pause()
+        isPlaying = false
+        document.getElementById('playIcon').className = 'fa-solid fa-circle-play'
+      }
+      else {
+        audio.play()
+        isPlaying = true
+        document.getElementById('playIcon').className = 'fa-solid fa-circle-pause'
+      }
+    }
+
+    function nextSong() {
+      currentSong++
+
+      if (currentSong >= songs.length) {
+        currentSong = 0
+      }
+
+      playSong(currentSong)
+    }
+
+    function prevSong() {
+      currentSong--
+
+      if (currentSong < 0) {
+        currentSong = songs.length - 1
+      }
+
+      playSong(currentSong)
+    }
+
+    audio.addEventListener('timeupdate', () => {
+
+      const progress = document.getElementById('progress')
+
+      if (audio.duration) {
+        progress.style.width = (audio.currentTime / audio.duration) * 100 + '%'
+      }
+    })
+
+    function seek(e) {
+
+      const width = e.currentTarget.clientWidth
+      const clickX = e.offsetX
+      const duration = audio.duration
+
+      audio.currentTime = (clickX / width) * duration
+    }
+
+    function changeVolume(value) {
+      audio.volume = value
+    }
+
+    function openAdmin() {
+      document.getElementById('adminModal').style.display = 'flex'
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminModal').style.display = 'none'
+    }
+
+    function loginAdmin() {
+
+      const user = document.getElementById('adminUser').value
+      const pass = document.getElementById('adminPass').value
+
+      if (user === 'admin' && pass === '110193') {
+
+        closeAdmin()
+
+        document.getElementById('adminPanel').style.display = 'block'
+
+        alert('Đăng nhập admin thành công!')
+      }
+      else {
+        alert('Sai tài khoản hoặc mật khẩu')
+      }
+    }
+
+    function closePanel() {
+      document.getElementById('adminPanel').style.display = 'none'
+    }
+
+    function addSong() {
+
+      const title = document.getElementById('title').value
+      const artist = document.getElementById('artist').value
+      const cover = document.getElementById('cover').value
+      const audioUrl = document.getElementById('audioUrl').value
+
+      if (!title || !artist || !cover || !audioUrl) {
+        alert('Vui lòng nhập đầy đủ thông tin')
+        return
+      }
+
+      songs.push({
+        title,
+        artist,
+        cover,
+        audio: audioUrl
+      })
+
+      renderSongs()
+
+      document.getElementById('title').value = ''
+      document.getElementById('artist').value = ''
+      document.getElementById('cover').value = ''
+      document.getElementById('audioUrl').value = ''
+
+      alert('Đã thêm bài hát')
+    }
+
+    function deleteSong(index) {
+
+      if (confirm('Xóa bài hát này?')) {
+        songs.splice(index, 1)
+        renderSongs()
+      }
+    }
+
+    audio.addEventListener('ended', () => {
+      nextSong()
+    })
+
+  </script>
+
 </body>
 </html>
