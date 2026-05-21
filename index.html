@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tan Music - Modern Music Streaming</title>
+  <title>Tan Music Streaming</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 
   <style>
     body {
       background: #170f23;
       color: white;
-      overflow-x: hidden;
       font-family: Arial, sans-serif;
+      overflow-x: hidden;
     }
 
     .glass {
@@ -22,480 +22,613 @@
       border: 1px solid rgba(255,255,255,0.1);
     }
 
-    .sidebar-item:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
     .song-card:hover {
       transform: translateY(-5px);
       transition: 0.3s;
     }
 
-    .progress {
-      width: 0%;
+    .sidebar-item:hover {
+      background: rgba(255,255,255,0.08);
     }
 
     audio {
-      display: none;
-    }
-
-    .admin-panel {
       display: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="flex min-h-screen">
+<div class="flex min-h-screen">
 
-    <!-- Sidebar -->
-    <aside class="w-64 glass p-5 hidden md:block">
-      <h1 class="text-3xl font-bold text-purple-400 mb-10">
-        🎵 Tan Music
-      </h1>
+  <!-- Sidebar -->
+  <aside class="hidden md:block w-64 glass p-5">
 
-      <div class="space-y-3">
-        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
-          <i class="fa-solid fa-house mr-2"></i> Trang chủ
-        </div>
+    <h1 class="text-3xl font-bold text-purple-400 mb-10">
+      🎵 Tan Music
+    </h1>
 
-        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
-          <i class="fa-solid fa-chart-line mr-2"></i> Trending
-        </div>
+    <div class="space-y-3">
 
-        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
-          <i class="fa-solid fa-music mr-2"></i> Playlist
-        </div>
-
-        <div class="sidebar-item p-3 rounded-xl cursor-pointer">
-          <i class="fa-solid fa-heart mr-2"></i> Yêu thích
-        </div>
-
-        <div class="sidebar-item p-3 rounded-xl cursor-pointer" onclick="openAdmin()">
-          <i class="fa-solid fa-lock mr-2"></i> Admin
-        </div>
-      </div>
-    </aside>
-
-    <!-- Main -->
-    <main class="flex-1 p-5 pb-40">
-
-      <!-- Search -->
-      <div class="flex justify-between items-center mb-8">
-        <div class="relative w-full md:w-96">
-          <input
-            type="text"
-            placeholder="Tìm bài hát, ca sĩ..."
-            class="w-full bg-[#2a1b3d] rounded-full px-5 py-3 outline-none"
-          />
-          <i class="fa-solid fa-search absolute right-5 top-4 text-gray-400"></i>
-        </div>
+      <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+        <i class="fa-solid fa-house mr-2"></i>
+        Trang chủ
       </div>
 
-      <!-- Banner -->
-      <div class="glass rounded-3xl p-10 mb-10 bg-gradient-to-r from-purple-700 to-pink-600">
-        <h2 class="text-5xl font-bold mb-4">
-          🎧 Music Streaming Platform
-        </h2>
-
-        <p class="text-lg opacity-90">
-          Giao diện hiện đại kiểu ZingMP3 / Spotify
-        </p>
+      <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+        <i class="fa-solid fa-fire mr-2"></i>
+        Trending
       </div>
 
-      <!-- Songs -->
-      <div class="flex justify-between items-center mb-5">
-        <h2 class="text-2xl font-bold">
-          🔥 Trending Songs
-        </h2>
+      <div class="sidebar-item p-3 rounded-xl cursor-pointer">
+        <i class="fa-solid fa-music mr-2"></i>
+        Playlist
       </div>
 
-      <div id="songList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div onclick="openAdmin()"
+        class="sidebar-item p-3 rounded-xl cursor-pointer">
+        <i class="fa-solid fa-lock mr-2"></i>
+        Admin
       </div>
 
-    </main>
-  </div>
+    </div>
+  </aside>
 
-  <!-- Player -->
-  <div class="fixed bottom-0 left-0 right-0 glass p-4 border-t border-white/10">
+  <!-- Main -->
+  <main class="flex-1 p-5 pb-40">
 
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+    <!-- Search -->
+    <div class="mb-8">
+      <input
+        id="searchInput"
+        onkeyup="searchSongs()"
+        type="text"
+        placeholder="Tìm bài hát..."
+        class="w-full md:w-96 bg-[#2a1b3d] px-5 py-3 rounded-full outline-none"
+      />
+    </div>
 
-      <div class="flex items-center gap-4">
-        <img id="playerCover"
-          src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600"
-          class="w-16 h-16 rounded-xl object-cover"
-        />
+    <!-- Banner -->
+    <div class="glass rounded-3xl p-10 bg-gradient-to-r from-purple-700 to-pink-600 mb-10">
+      <h2 class="text-5xl font-bold mb-4">
+        🎧 Modern Music Streaming
+      </h2>
 
-        <div>
-          <h3 id="playerTitle" class="font-bold">
-            Chưa phát nhạc
-          </h3>
+      <p class="text-lg opacity-90">
+        Website nghe nhạc online hiện đại giống ZingMP3
+      </p>
+    </div>
 
-          <p id="playerArtist" class="text-sm text-gray-300">
-            ---
-          </p>
-        </div>
-      </div>
+    <!-- Songs -->
+    <div class="flex justify-between items-center mb-5">
+      <h2 class="text-2xl font-bold">
+        🔥 Trending Songs
+      </h2>
+    </div>
 
-      <div class="flex flex-col items-center flex-1 max-w-2xl">
+    <div id="songList"
+      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    </div>
 
-        <div class="flex gap-5 text-xl mb-3">
-          <button onclick="prevSong()">
-            <i class="fa-solid fa-backward-step"></i>
-          </button>
+  </main>
+</div>
 
-          <button onclick="togglePlay()" class="text-3xl">
-            <i id="playIcon" class="fa-solid fa-circle-play"></i>
-          </button>
+<!-- Music Player -->
+<div class="fixed bottom-0 left-0 right-0 glass p-4 border-t border-white/10">
 
-          <button onclick="nextSong()">
-            <i class="fa-solid fa-forward-step"></i>
-          </button>
-        </div>
+  <div class="flex flex-col md:flex-row items-center justify-between gap-5">
 
-        <div class="w-full bg-gray-700 rounded-full h-2 cursor-pointer" onclick="seek(event)">
-          <div id="progress" class="bg-purple-500 h-2 rounded-full progress"></div>
-        </div>
-      </div>
+    <div class="flex items-center gap-4">
+      <img id="playerCover"
+        src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600"
+        class="w-16 h-16 rounded-xl object-cover"
+      />
 
       <div>
-        <input type="range" min="0" max="1" step="0.1" value="1" onchange="changeVolume(this.value)">
+        <h3 id="playerTitle" class="font-bold">
+          Chưa phát nhạc
+        </h3>
+
+        <p id="playerArtist" class="text-sm text-gray-300">
+          ---
+        </p>
       </div>
     </div>
-  </div>
 
-  <!-- Hidden Audio -->
-  <audio id="audio"></audio>
+    <div class="flex flex-col items-center flex-1 max-w-2xl">
 
-  <!-- Admin Login Modal -->
-  <div id="adminModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
+      <div class="flex gap-5 text-2xl mb-3">
 
-    <div class="glass p-8 rounded-3xl w-96">
-      <h2 class="text-3xl font-bold mb-6 text-center text-purple-400">
-        🔐 Admin Login
-      </h2>
+        <button onclick="prevSong()">
+          <i class="fa-solid fa-backward-step"></i>
+        </button>
 
-      <input
-        id="adminUser"
-        type="text"
-        placeholder="Username"
-        class="w-full mb-4 bg-[#2a1b3d] p-3 rounded-xl outline-none"
-      />
+        <button onclick="togglePlay()">
+          <i id="playIcon" class="fa-solid fa-circle-play text-4xl"></i>
+        </button>
 
-      <input
-        id="adminPass"
-        type="password"
-        placeholder="Password"
-        class="w-full mb-4 bg-[#2a1b3d] p-3 rounded-xl outline-none"
-      />
-
-      <button
-        onclick="loginAdmin()"
-        class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded-xl font-bold"
-      >
-        Đăng nhập
-      </button>
-
-      <button
-        onclick="closeAdmin()"
-        class="w-full mt-3 bg-gray-700 p-3 rounded-xl"
-      >
-        Đóng
-      </button>
-    </div>
-  </div>
-
-  <!-- Admin Panel -->
-  <div id="adminPanel" class="admin-panel fixed inset-0 bg-[#120b1c] z-50 overflow-y-auto p-10">
-
-    <div class="flex justify-between items-center mb-10">
-      <h2 class="text-4xl font-bold text-purple-400">
-        🎛️ Admin Dashboard
-      </h2>
-
-      <button onclick="closePanel()" class="bg-red-500 px-5 py-2 rounded-xl">
-        Đóng
-      </button>
-    </div>
-
-    <div class="glass p-6 rounded-3xl mb-10">
-
-      <h3 class="text-2xl font-bold mb-5">
-        ➕ Upload / Add Music
-      </h3>
-
-      <div class="grid md:grid-cols-2 gap-5">
-
-        <input id="title" type="text" placeholder="Tên bài hát"
-          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
-
-        <input id="artist" type="text" placeholder="Ca sĩ"
-          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
-
-        <input id="cover" type="text" placeholder="Link ảnh cover"
-          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
-
-        <input id="audioUrl" type="text" placeholder="Link MP3"
-          class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+        <button onclick="nextSong()">
+          <i class="fa-solid fa-forward-step"></i>
+        </button>
 
       </div>
 
-      <button
-        onclick="addSong()"
-        class="mt-5 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold"
-      >
-        Thêm bài hát
-      </button>
+      <div onclick="seek(event)"
+        class="w-full bg-gray-700 h-2 rounded-full cursor-pointer">
+
+        <div id="progress"
+          class="bg-purple-500 h-2 rounded-full"
+          style="width:0%">
+        </div>
+      </div>
     </div>
 
     <div>
-      <h3 class="text-2xl font-bold mb-5">
-        🎵 Quản lý nhạc
-      </h3>
-
-      <div id="adminSongs" class="space-y-4">
-      </div>
+      <input type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value="1"
+        onchange="changeVolume(this.value)">
     </div>
 
   </div>
+</div>
 
-  <script>
+<audio id="audio"></audio>
 
-    let songs = [
-      {
-        title: 'Dreams',
-        artist: 'Tanhenry',
-        cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600',
-        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-      },
-      {
-        title: 'Night Chill',
-        artist: 'LoFi Studio',
-        cover: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600',
-        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
-      },
-      {
-        title: 'Relax Mood',
-        artist: 'Chill Music',
-        cover: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=600',
-        audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-      }
-    ]
+<!-- Admin Login -->
+<div id="adminModal"
+  class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
 
-    const songList = document.getElementById('songList')
-    const adminSongs = document.getElementById('adminSongs')
-    const audio = document.getElementById('audio')
+  <div class="glass p-8 rounded-3xl w-96">
 
-    let currentSong = 0
-    let isPlaying = false
+    <h2 class="text-3xl font-bold text-center mb-6 text-purple-400">
+      🔐 Admin Login
+    </h2>
 
-    function renderSongs() {
+    <input
+      id="adminUser"
+      type="text"
+      placeholder="Username"
+      class="w-full bg-[#2a1b3d] p-3 rounded-xl mb-4 outline-none"
+    />
 
-      songList.innerHTML = ''
-      adminSongs.innerHTML = ''
+    <input
+      id="adminPass"
+      type="password"
+      placeholder="Password"
+      class="w-full bg-[#2a1b3d] p-3 rounded-xl mb-4 outline-none"
+    />
 
-      songs.forEach((song, index) => {
+    <button onclick="loginAdmin()"
+      class="w-full bg-purple-600 hover:bg-purple-700 p-3 rounded-xl font-bold">
+      Đăng nhập
+    </button>
 
-        songList.innerHTML += `
-          <div class="song-card glass rounded-3xl overflow-hidden cursor-pointer">
+    <button onclick="closeAdmin()"
+      class="w-full mt-3 bg-gray-700 p-3 rounded-xl">
+      Đóng
+    </button>
 
-            <img src="${song.cover}"
-              class="w-full h-56 object-cover"
-            />
+  </div>
+</div>
 
-            <div class="p-4">
-              <h3 class="font-bold text-lg mb-1">
-                ${song.title}
-              </h3>
+<!-- Admin Panel -->
+<div id="adminPanel"
+  class="hidden fixed inset-0 bg-[#120b1c] z-50 overflow-y-auto p-10">
 
-              <p class="text-gray-300 text-sm mb-4">
-                ${song.artist}
-              </p>
+  <div class="flex justify-between items-center mb-10">
 
-              <button
-                onclick="playSong(${index})"
-                class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-xl w-full"
-              >
-                ▶ Phát nhạc
-              </button>
-            </div>
+    <h2 class="text-4xl font-bold text-purple-400">
+      🎛️ Admin Dashboard
+    </h2>
+
+    <button onclick="logoutAdmin()"
+      class="bg-red-500 px-5 py-2 rounded-xl">
+      Logout
+    </button>
+  </div>
+
+  <!-- Add Song -->
+  <div class="glass p-6 rounded-3xl mb-10">
+
+    <h3 class="text-2xl font-bold mb-5">
+      ➕ Thêm bài hát
+    </h3>
+
+    <div class="grid md:grid-cols-2 gap-5">
+
+      <input id="title"
+        type="text"
+        placeholder="Tên bài hát"
+        class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+      <input id="artist"
+        type="text"
+        placeholder="Tên ca sĩ"
+        class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+      <input id="cover"
+        type="text"
+        placeholder="Link ảnh cover"
+        class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+      <input id="audioUrl"
+        type="text"
+        placeholder="Link MP3"
+        class="bg-[#2a1b3d] p-3 rounded-xl outline-none">
+
+    </div>
+
+    <button onclick="addSong()"
+      class="mt-5 bg-purple-600 hover:bg-purple-700 px-6 py-3 rounded-xl font-bold">
+      Thêm bài hát
+    </button>
+  </div>
+
+  <!-- Song Management -->
+  <div>
+
+    <h3 class="text-2xl font-bold mb-5">
+      🎵 Quản lý nhạc
+    </h3>
+
+    <div id="adminSongs" class="space-y-4"></div>
+
+  </div>
+</div>
+
+<script>
+
+// ===============================
+// DATABASE
+// ===============================
+
+let songs = JSON.parse(localStorage.getItem('tan_music_database')) || [
+  {
+    title: 'Dream Music',
+    artist: 'Tanhenry',
+    cover: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=600',
+    audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
+  },
+  {
+    title: 'Night Chill',
+    artist: 'LoFi Studio',
+    cover: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=600',
+    audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
+  }
+]
+
+function saveSongs() {
+  localStorage.setItem(
+    'tan_music_database',
+    JSON.stringify(songs)
+  )
+}
+
+// ===============================
+// ELEMENTS
+// ===============================
+
+const songList = document.getElementById('songList')
+const adminSongs = document.getElementById('adminSongs')
+const audio = document.getElementById('audio')
+
+let currentSong = 0
+let isPlaying = false
+
+// ===============================
+// RENDER SONGS
+// ===============================
+
+function renderSongs(data = songs) {
+
+  songList.innerHTML = ''
+  adminSongs.innerHTML = ''
+
+  data.forEach((song, index) => {
+
+    // FRONT SONG CARD
+    songList.innerHTML += `
+      <div class="song-card glass rounded-3xl overflow-hidden">
+
+        <img src="${song.cover}"
+          class="w-full h-56 object-cover">
+
+        <div class="p-4">
+
+          <h3 class="font-bold text-lg mb-1">
+            ${song.title}
+          </h3>
+
+          <p class="text-gray-300 text-sm mb-4">
+            ${song.artist}
+          </p>
+
+          <button onclick="playSong(${index})"
+            class="bg-purple-600 hover:bg-purple-700 w-full py-2 rounded-xl">
+            ▶ Phát nhạc
+          </button>
+
+        </div>
+      </div>
+    `
+
+    // ADMIN SONGS
+    adminSongs.innerHTML += `
+      <div class="glass p-5 rounded-2xl flex justify-between items-center flex-wrap gap-4">
+
+        <div class="flex items-center gap-4">
+
+          <img src="${song.cover}"
+            class="w-16 h-16 rounded-xl object-cover">
+
+          <div>
+            <h4 class="font-bold">${song.title}</h4>
+            <p class="text-gray-400 text-sm">${song.artist}</p>
           </div>
-        `
 
-        adminSongs.innerHTML += `
-          <div class="glass p-5 rounded-2xl flex justify-between items-center flex-wrap gap-4">
+        </div>
 
-            <div class="flex items-center gap-4">
-              <img src="${song.cover}" class="w-16 h-16 rounded-xl object-cover">
+        <div class="flex gap-3">
 
-              <div>
-                <h4 class="font-bold">${song.title}</h4>
-                <p class="text-gray-400 text-sm">${song.artist}</p>
-              </div>
-            </div>
+          <button onclick="editSong(${index})"
+            class="bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-xl">
+            Sửa
+          </button>
 
-            <button
-              onclick="deleteSong(${index})"
-              class="bg-red-500 hover:bg-red-600 px-5 py-2 rounded-xl"
-            >
-              Xóa
-            </button>
-          </div>
-        `
-      })
-    }
+          <button onclick="deleteSong(${index})"
+            class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-xl">
+            Xóa
+          </button>
 
-    renderSongs()
+        </div>
+      </div>
+    `
 
-    function playSong(index) {
+  })
+}
 
-      currentSong = index
+renderSongs()
 
-      const song = songs[index]
+// ===============================
+// MUSIC PLAYER
+// ===============================
 
-      audio.src = song.audio
-      audio.play()
+function playSong(index) {
 
-      isPlaying = true
+  currentSong = index
 
-      document.getElementById('playerTitle').innerText = song.title
-      document.getElementById('playerArtist').innerText = song.artist
-      document.getElementById('playerCover').src = song.cover
+  const song = songs[index]
 
-      document.getElementById('playIcon').className = 'fa-solid fa-circle-pause'
-    }
+  audio.src = song.audio
+  audio.play()
 
-    function togglePlay() {
+  isPlaying = true
 
-      if (!audio.src) return
+  document.getElementById('playerTitle').innerText = song.title
+  document.getElementById('playerArtist').innerText = song.artist
+  document.getElementById('playerCover').src = song.cover
 
-      if (isPlaying) {
-        audio.pause()
-        isPlaying = false
-        document.getElementById('playIcon').className = 'fa-solid fa-circle-play'
-      }
-      else {
-        audio.play()
-        isPlaying = true
-        document.getElementById('playIcon').className = 'fa-solid fa-circle-pause'
-      }
-    }
+  document.getElementById('playIcon').className =
+    'fa-solid fa-circle-pause text-4xl'
+}
 
-    function nextSong() {
-      currentSong++
+function togglePlay() {
 
-      if (currentSong >= songs.length) {
-        currentSong = 0
-      }
+  if (!audio.src) return
 
-      playSong(currentSong)
-    }
+  if (isPlaying) {
+    audio.pause()
+    isPlaying = false
 
-    function prevSong() {
-      currentSong--
+    document.getElementById('playIcon').className =
+      'fa-solid fa-circle-play text-4xl'
+  }
+  else {
+    audio.play()
+    isPlaying = true
 
-      if (currentSong < 0) {
-        currentSong = songs.length - 1
-      }
+    document.getElementById('playIcon').className =
+      'fa-solid fa-circle-pause text-4xl'
+  }
+}
 
-      playSong(currentSong)
-    }
+function nextSong() {
 
-    audio.addEventListener('timeupdate', () => {
+  currentSong++
 
-      const progress = document.getElementById('progress')
+  if (currentSong >= songs.length) {
+    currentSong = 0
+  }
 
-      if (audio.duration) {
-        progress.style.width = (audio.currentTime / audio.duration) * 100 + '%'
-      }
-    })
+  playSong(currentSong)
+}
 
-    function seek(e) {
+function prevSong() {
 
-      const width = e.currentTarget.clientWidth
-      const clickX = e.offsetX
-      const duration = audio.duration
+  currentSong--
 
-      audio.currentTime = (clickX / width) * duration
-    }
+  if (currentSong < 0) {
+    currentSong = songs.length - 1
+  }
 
-    function changeVolume(value) {
-      audio.volume = value
-    }
+  playSong(currentSong)
+}
 
-    function openAdmin() {
-      document.getElementById('adminModal').style.display = 'flex'
-    }
+audio.addEventListener('timeupdate', () => {
 
-    function closeAdmin() {
-      document.getElementById('adminModal').style.display = 'none'
-    }
+  if (!audio.duration) return
 
-    function loginAdmin() {
+  const progress = document.getElementById('progress')
 
-      const user = document.getElementById('adminUser').value
-      const pass = document.getElementById('adminPass').value
+  progress.style.width =
+    (audio.currentTime / audio.duration) * 100 + '%'
+})
 
-      if (user === 'admin' && pass === '110193') {
+function seek(event) {
 
-        closeAdmin()
+  const width = event.currentTarget.clientWidth
+  const clickX = event.offsetX
 
-        document.getElementById('adminPanel').style.display = 'block'
+  audio.currentTime =
+    (clickX / width) * audio.duration
+}
 
-        alert('Đăng nhập admin thành công!')
-      }
-      else {
-        alert('Sai tài khoản hoặc mật khẩu')
-      }
-    }
+function changeVolume(value) {
+  audio.volume = value
+}
 
-    function closePanel() {
-      document.getElementById('adminPanel').style.display = 'none'
-    }
+audio.addEventListener('ended', () => {
+  nextSong()
+})
 
-    function addSong() {
+// ===============================
+// ADMIN LOGIN
+// ===============================
 
-      const title = document.getElementById('title').value
-      const artist = document.getElementById('artist').value
-      const cover = document.getElementById('cover').value
-      const audioUrl = document.getElementById('audioUrl').value
+function openAdmin() {
+  document.getElementById('adminModal').classList.remove('hidden')
+  document.getElementById('adminModal').classList.add('flex')
+}
 
-      if (!title || !artist || !cover || !audioUrl) {
-        alert('Vui lòng nhập đầy đủ thông tin')
-        return
-      }
+function closeAdmin() {
+  document.getElementById('adminModal').classList.add('hidden')
+  document.getElementById('adminModal').classList.remove('flex')
+}
 
-      songs.push({
-        title,
-        artist,
-        cover,
-        audio: audioUrl
-      })
+function loginAdmin() {
 
-      renderSongs()
+  const username = document.getElementById('adminUser').value.trim()
+  const password = document.getElementById('adminPass').value.trim()
 
-      document.getElementById('title').value = ''
-      document.getElementById('artist').value = ''
-      document.getElementById('cover').value = ''
-      document.getElementById('audioUrl').value = ''
+  if (username === 'admin' && password === '110193') {
 
-      alert('Đã thêm bài hát')
-    }
+    localStorage.setItem('tan_music_admin', 'true')
 
-    function deleteSong(index) {
+    closeAdmin()
 
-      if (confirm('Xóa bài hát này?')) {
-        songs.splice(index, 1)
-        renderSongs()
-      }
-    }
+    document.getElementById('adminPanel').classList.remove('hidden')
 
-    audio.addEventListener('ended', () => {
-      nextSong()
-    })
+    alert('Đăng nhập admin thành công 🎉')
+  }
+  else {
+    alert('Sai tài khoản hoặc mật khẩu ❌')
+  }
+}
 
-  </script>
+function logoutAdmin() {
+
+  localStorage.removeItem('tan_music_admin')
+
+  document.getElementById('adminPanel').classList.add('hidden')
+}
+
+// Auto login admin
+if (localStorage.getItem('tan_music_admin') === 'true') {
+  document.getElementById('adminPanel').classList.remove('hidden')
+}
+
+// ===============================
+// CRUD SONGS
+// ===============================
+
+function addSong() {
+
+  const title = document.getElementById('title').value
+  const artist = document.getElementById('artist').value
+  const cover = document.getElementById('cover').value
+  const audioUrl = document.getElementById('audioUrl').value
+
+  if (!title || !artist || !cover || !audioUrl) {
+    alert('Vui lòng nhập đầy đủ thông tin')
+    return
+  }
+
+  songs.push({
+    title,
+    artist,
+    cover,
+    audio: audioUrl
+  })
+
+  saveSongs()
+  renderSongs()
+
+  document.getElementById('title').value = ''
+  document.getElementById('artist').value = ''
+  document.getElementById('cover').value = ''
+  document.getElementById('audioUrl').value = ''
+
+  alert('Đã thêm bài hát 🎵')
+}
+
+function deleteSong(index) {
+
+  const confirmDelete = confirm('Xóa bài hát này?')
+
+  if (!confirmDelete) return
+
+  songs.splice(index, 1)
+
+  saveSongs()
+  renderSongs()
+
+  alert('Đã xóa bài hát')
+}
+
+function editSong(index) {
+
+  const song = songs[index]
+
+  const newTitle = prompt('Tên bài hát:', song.title)
+  if (newTitle === null) return
+
+  const newArtist = prompt('Tên ca sĩ:', song.artist)
+  if (newArtist === null) return
+
+  const newCover = prompt('Link ảnh cover:', song.cover)
+  if (newCover === null) return
+
+  const newAudio = prompt('Link MP3:', song.audio)
+  if (newAudio === null) return
+
+  songs[index] = {
+    title: newTitle,
+    artist: newArtist,
+    cover: newCover,
+    audio: newAudio
+  }
+
+  saveSongs()
+  renderSongs()
+
+  alert('Cập nhật bài hát thành công ✨')
+}
+
+// ===============================
+// SEARCH SONG
+// ===============================
+
+function searchSongs() {
+
+  const keyword = document
+    .getElementById('searchInput')
+    .value
+    .toLowerCase()
+
+  const filtered = songs.filter(song => {
+
+    return (
+      song.title.toLowerCase().includes(keyword) ||
+      song.artist.toLowerCase().includes(keyword)
+    )
+  })
+
+  renderSongs(filtered)
+}
+
+</script>
 
 </body>
 </html>
